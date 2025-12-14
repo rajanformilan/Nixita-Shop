@@ -14,7 +14,7 @@
             justify-content: center; 
         }
         .container { 
-            max-width: 900px; /* Increased width to accommodate the new column */
+            max-width: 900px; 
             width: 100%; 
             background-color: white; 
             padding: 30px; 
@@ -40,7 +40,7 @@
             border-bottom: 1px solid #eee;
         }
         .history-table th {
-            background-color: #e8eaf6; /* Light blue header */
+            background-color: #e8eaf6; 
             color: #3f51b5;
             font-weight: bold;
             text-transform: uppercase;
@@ -51,14 +51,24 @@
         }
         
         /* --- Status & Amount Colors --- */
-        .deposit { color: #4CAF50; font-weight: bold; } /* Green */
-        .withdrawal { color: #f44336; font-weight: bold; } /* Red */
-        .bonus { color: #ff9800; font-weight: bold; } /* Orange */
-        .fee { color: #f44336; } /* Red for small text */
+        .deposit { color: #4CAF50; font-weight: bold; } 
+        .withdrawal { color: #f44336; font-weight: bold; } 
+        .bonus { color: #ff9800; font-weight: bold; } 
         
         .status-success { color: #4CAF50; }
         .status-pending { color: #ff9800; }
         .status-failed { color: #f44336; }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
         .back-link { 
             display: block; 
             margin-top: 25px; 
@@ -67,10 +77,9 @@
             text-decoration: none; 
             font-weight: bold;
         }
-        /* Specific styling for the Account column to emphasize personalization */
         .account-info {
             font-size: 0.9em;
-            color: #6c757d; /* Dark grey for secondary detail */
+            color: #6c757d;
         }
     </style>
 </head>
@@ -80,69 +89,137 @@
 
         <h1>📜 Transaction History</h1>
 
-        <p>Review all your account activity including deposits, withdrawals, and bonuses.</p>
+        <p>Review all your account activity, including deposits, withdrawals, and bonuses.</p>
 
         
-        <table class="history-table">
+        <table class="history-table" id="transactionTable" style="display:none;">
             <thead>
                 <tr>
                     <th>Date</th>
                     <th>Type</th>
                     <th>Amount (NPR)</th>
-                    <th>Account (User)</th> <th>Reference/Details</th>
+                    <th>Account (User)</th>
+                    <th>Reference/Details</th>
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>2025-12-14</td>
-                    <td><span class="withdrawal">Withdrawal</span></td>
-                    <td><span class="withdrawal">-500.00</span></td>
-                    <td><span class="account-info">Khalti (98XXXXXXXX)</span></td> <td>Processed (Fee: Rs 50.00)</td>
-                    <td><span class="status-success">Completed</span></td>
-                </tr>
-                
-                <tr>
-                    <td>2025-12-14</td>
-                    <td><span class="withdrawal">Withdrawal</span></td>
-                    <td><span class="withdrawal">-1,500.00</span></td>
-                    <td><span class="account-info">eSewa (98XXXXXXXX)</span></td> <td>Processed (Fee: Rs 150.00)</td>
-                    <td><span class="status-success">Completed</span></td>
-                </tr>
-                
-                <tr>
-                    <td>2025-12-13</td>
-                    <td><span class="bonus">Bonus</span></td>
-                    <td><span class="deposit">+10.00</span></td>
-                    <td><span class="account-info">N/A</span></td> <td>Daily Check-in Reward</td>
-                    <td><span class="status-success">Completed</span></td>
-                </tr>
-                <tr>
-                    <td>2025-12-12</td>
-                    <td><span class="deposit">Deposit</span></td>
-                    <td><span class="deposit">+1000.00</span></td>
-                    <td><span class="account-info">Nabil Bank (05XXXXXXXX)</span></td> <td>Bank Transfer TXN12345</td>
-                    <td><span class="status-success">Completed</span></td>
-                </tr>
-                <tr>
-                    <td>2025-12-10</td>
-                    <td><span class="withdrawal">Withdrawal</span></td>
-                    <td><span class="withdrawal">-250.00</span></td>
-                    <td><span class="account-info">IME Pay (98XXXXXXXX)</span></td> <td>Min Withdrawal Failed</td>
-                    <td><span class="status-failed">Failed</span></td>
-                </tr>
-                <tr>
-                    <td>2025-12-08</td>
-                    <td><span class="bonus">Bonus</span></td>
-                    <td><span class="deposit">+100.00</span></td>
-                    <td><span class="account-info">N/A</span></td>
-                    <td>New User Welcome Bonus</td>
-                    <td><span class="status-success">Completed</span></td>
-                </tr>
-            </tbody>
+            <tbody id="transactionBody">
+                </tbody>
         </table>
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+
+        <div id="emptyMessage" class="empty-message" style="display:none;">
+            You currently have no transaction history recorded.
+        </div>
+
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
 
     </div>
+
+<script>
+    const HISTORY_STORAGE_KEY = 'transactionHistory';
+    const RECRUITMENT_BONUS = 100.00;
+
+    /**
+     * Retrieves the transaction history from local storage.
+     * Initializes with a default welcome bonus if history is empty.
+     */
+    const getHistory = () => {
+        let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
+        
+        // Check if the initial bonus is missing, and if so, add it for the "real" experience.
+        if (history.length === 0) {
+            const initialBonus = {
+                date: new Date().toISOString().slice(0, 10),
+                type: 'Bonus',
+                amount: RECRUITMENT_BONUS,
+                account: 'N/A',
+                details: 'New User Welcome Bonus',
+                status: 'Completed',
+            };
+            history.push(initialBonus);
+            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+        }
+        
+        // Sort by date descending
+        history.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return history;
+    };
+
+    /**
+     * Renders the transaction history into the HTML table.
+     */
+    const renderHistory = () => {
+        const history = getHistory();
+        const tableBody = document.getElementById('transactionBody');
+        const transactionTable = document.getElementById('transactionTable');
+        const emptyMessage = document.getElementById('emptyMessage');
+        
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        if (history.length === 0) {
+            transactionTable.style.display = 'none';
+            emptyMessage.style.display = 'block';
+            return;
+        }
+
+        transactionTable.style.display = 'table';
+        emptyMessage.style.display = 'none';
+
+        history.forEach(tx => {
+            const isCredit = ['Deposit', 'Bonus'].includes(tx.type);
+            const amountClass = isCredit ? 'deposit' : 'withdrawal';
+            const sign = isCredit ? '+' : '-';
+            const statusClass = `status-${tx.status.toLowerCase()}`;
+
+            const row = tableBody.insertRow();
+            
+            // 1. Date
+            row.insertCell().textContent = tx.date; 
+
+            // 2. Type
+            row.insertCell().innerHTML = `<span class="${tx.type.toLowerCase()}">${tx.type}</span>`;
+
+            // 3. Amount (NPR)
+            row.insertCell().innerHTML = `<span class="${amountClass}">${sign}${tx.amount.toFixed(2)}</span>`;
+
+            // 4. Account (User's Personal Detail)
+            row.insertCell().innerHTML = `<span class="account-info">${tx.account || 'N/A'}</span>`;
+
+            // 5. Reference/Details
+            row.insertCell().textContent = tx.details;
+
+            // 6. Status
+            row.insertCell().innerHTML = `<span class="${statusClass}">${tx.status}</span>`;
+        });
+    };
+
+    // --- Add a function to simulate recording a transaction (for testing/integration) ---
+    // You would call this function from your deposit/withdrawal pages.
+    const recordTransaction = (type, amount, account, details, status = 'Completed') => {
+        const newTx = {
+            date: new Date().toISOString().slice(0, 10),
+            type: type,
+            amount: amount,
+            account: account,
+            details: details,
+            status: status,
+        };
+        let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
+        history.push(newTx);
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+    };
+
+    // --- RUN ON LOAD ---
+    document.addEventListener('DOMContentLoaded', renderHistory);
+    
+    // --- Sample Transaction Recording for Demonstration ---
+    // If you uncomment these lines and refresh the history page, you'll see these transactions.
+    /*
+    recordTransaction('Deposit', 500.00, 'Khalti (981XXXXXXX)', 'Recharge Confirmation', 'Completed');
+    recordTransaction('Withdrawal', 450.00, 'Bank (054XXXXXX)', 'Net Payout', 'Pending');
+    recordTransaction('Bonus', 25.00, 'N/A', 'Referral Commission', 'Completed');
+    */
+    
+</script>
 </body>
 </html>
