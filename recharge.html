@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Recharge Confirmation</title>
+    <style>
+        /* --- General Setup --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5; /* Light, modern background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        /* --- Layout Container --- */
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 550px;
+            border-top: 4px solid #3f51b5; /* Primary accent color */
+        }
+        h2 {
+            color: #3f51b5;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 1.8em;
+        }
+        .note {
+            font-size: 0.95em;
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* --- Payment Information Section --- */
+        .payment-info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .payment-card {
+            background-color: #e8f5e9; /* Light Success Green */
+            border: 1px solid #c8e6c9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .payment-card h3 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1em;
+            padding: 5px 0;
+            border-bottom: 1px dashed #c8e6c9;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row strong {
+            color: #3f51b5;
+            font-weight: 600;
+        }
+        /* --- Form Styling --- */
+        form h3 {
+            color: #555;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 25px;
+        }
+        form label { 
+            display: block; 
+            margin: 15px 0 5px; 
+            font-weight: 600; 
+            color: #555; 
+            font-size: 0.95em;
+        }
+        input[type="number"], input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus, input[type="text"]:focus, input[type="file"]:focus {
+            border-color: #3f51b5;
+            outline: none;
+        }
+        input[type="file"] {
+             padding: 10px;
+             background-color: #f9f9f9;
+        }
+        
+        /* --- Button and Message --- */
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #03a9f4; /* Bright Blue */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0288d1;
+        }
+        .message {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            font-weight: 600;
+            display: none;
+            line-height: 1.6;
+        }
+        .success {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .back-link { 
+            display: block; 
+            margin-top: 25px; 
+            text-align: center; 
+            color: #3f51b5; 
+            text-decoration: none; 
+            font-weight: 600;
+        }
+        .email-link-area {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .email-link-area a {
+            display: block;
+            background-color: #ff9800; /* Orange for Call to Action */
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        .email-link-area a:hover {
+            background-color: #f57c00;
+        }
+        .warning-text {
+            color: #f44336;
+            font-size: 0.95em;
+            font-weight: bold;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h2>💰 Direct Balance Recharge</h2>
+    <p class="note">⚠️ Please complete your money transfer before proceeding to submit the confirmation form below.</p>
+
+    <div class="payment-info-grid">
+        <div class="payment-card">
+            <h3>💳 Khalti Wallet (Primary)</h3>
+            <div class="detail-row">
+                <span>Wallet ID/Mobile:</span>
+                <strong>9819210050</strong>
+            </div>
+            <div class="detail-row">
+                <span>Account Name:</span>
+                <strong>Rajan Kandel</strong>
+            </div>
+        </div>
+        <div class="payment-card">
+            <h3>🏦 Bank Transfer (Secondary)</h3>
+            <div class="detail-row">
+                <span>Bank Name:</span>
+                <strong>Nabil Bank Limited</strong>
+            </div>
+            <div class="detail-row">
+                <span>Account No.:</span>
+                <strong>05410017510742</strong>
+            </div>
+            <div class="detail-row">
+                <span>Account Name:</span>
+                <strong>Rajan Kandel</strong>
+            </div>
+        </div>
+    </div>
+
+    <form id="rechargeConfirmForm" onsubmit="return handleRechargeSubmit(event)">
+        <h3>1. Payment Confirmation Details</h3>
+
+        <label for="paid-amount">Amount Paid (NPR)</label>
+        <input type="number" id="paid-amount" placeholder="Minimum NPR 100" min="100" step="1" required>
+
+        <label for="transaction-id">Transaction Reference ID/Code</label>
+        <input type="text" id="transaction-id" placeholder="e.g., Khalti Ref: 12345678" required>
+        
+        <label for="screenshot-file">2. Upload Transaction Screenshot (Required)</label>
+        <input type="file" id="screenshot-file" accept="image/*" required>
+
+        <button type="submit">Submit Confirmation & Get Email Link</button>
+    </form>
+
+    <div id="statusMessage" class="message"></div>
+    
+    <a href="profile.html" class="back-link">← Back to Profile Dashboard</a>
+</div>
+<script>
+    const MINIMUM_RECHARGE = 100;
+    const ADMIN_EMAIL = 'shopnixita@gmail.com'; 
+    const BALANCE_STORAGE_KEY = 'profileBalance';
+
+    const getUserId = () => {
+        // Static ID for demonstration purposes
+        return '1234567'; 
+    };
+
+    function handleRechargeSubmit(event) {
+        event.preventDefault(); 
+
+        const amountInput = document.getElementById('paid-amount');
+        const txIdInput = document.getElementById('transaction-id');
+        const screenshotInput = document.getElementById('screenshot-file');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        const paidAmount = parseFloat(amountInput.value);
+        const transactionId = txIdInput.value.trim();
+        const userId = getUserId(); 
+        
+        statusMessage.style.display = 'block';
+        statusMessage.className = 'message'; 
+        
+        // 1. Validation Checks
+        if (isNaN(paidAmount) || paidAmount < MINIMUM_RECHARGE) {
+            statusMessage.classList.add('error');
+            statusMessage.textContent = `❌ Error: Minimum recharge amount is NPR ${MINIMUM_RECHARGE}.00`;
+            return false;
+        }
+        if (transactionId === "") {
+            statusMessage.classList.add('error');
+            statusMessage.textContent = '❌ Error: Please enter a valid Transaction Reference ID.';
+            return false;
+        }
+        if (screenshotInput.files.length === 0) {
+            statusMessage.classList.add('error');
+            statusMessage.textContent = '❌ Error: Please upload the transaction screenshot.';
+            return false;
+        }
+
+        // 2. Prepare Email Content and Mailto Link
+        const subject = `Recharge Proof | User ${userId} | NPR ${paidAmount.toFixed(2)}`;
+        const bodyContent = `
+Dear Admin,
+
+A user has submitted a recharge proof. Please check the attachment.
+
+User ID: ${userId}
+Amount Paid: NPR ${paidAmount.toFixed(2)}
+Transaction Reference ID: ${transactionId}
+
+---
+Action Required: Verify the transfer and credit the user via the Dealer Panel.
+`;
+        
+        // URL-encode the subject and body for the mailto link
+        const mailtoLink = `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
+
+
+        // 3. Display Confirmation to User (with the mailto link)
+        statusMessage.classList.add('success');
+        statusMessage.innerHTML = `
+            ✅ **Confirmation Prepared!** <br>
+            Your claim for **NPR ${paidAmount.toFixed(2)}** is ready for submission.
+            <br>
+            <div class="email-link-area">
+                <p class="warning-text">
+                    FINAL STEP: Click the button below to send the email. Your mail application will open. 
+                    <br>***YOU MUST ATTACH THE SCREENSHOT MANUALLY TO THE EMAIL!***
+                </p>
+                <a href="${mailtoLink}">
+                    SEND PROOF EMAIL TO ADMIN NOW →
+                </a>
+            </div>
+            <br>
+            <div style="font-size: 0.85em; color: #3f51b5; border-top: 1px dashed #bbdefb; padding-top: 10px;">
+                Admin Email Target: ${ADMIN_EMAIL}
+            </div>
+        `;
+
+        // Clear the form fields after successful confirmation
+        amountInput.value = '';
+        txIdInput.value = '';
+        screenshotInput.value = ''; 
+
+        return true;
+    }
+</script>
+</body>
+</html>
