@@ -14,7 +14,7 @@
             justify-content: center; 
         }
         .container { 
-            max-width: 800px; 
+            max-width: 900px; /* Increased width to accommodate the new column */
             width: 100%; 
             background-color: white; 
             padding: 30px; 
@@ -59,7 +59,6 @@
         .status-success { color: #4CAF50; }
         .status-pending { color: #ff9800; }
         .status-failed { color: #f44336; }
-
         .back-link { 
             display: block; 
             margin-top: 25px; 
@@ -68,13 +67,21 @@
             text-decoration: none; 
             font-weight: bold;
         }
+        /* Specific styling for the Account column to emphasize personalization */
+        .account-info {
+            font-size: 0.9em;
+            color: #6c757d; /* Dark grey for secondary detail */
+        }
     </style>
 </head>
-<body>
 
+<body>
     <div class="container">
+
         <h1>📜 Transaction History</h1>
+
         <p>Review all your account activity including deposits, withdrawals, and bonuses.</p>
+
         
         <table class="history-table">
             <thead>
@@ -82,7 +89,7 @@
                     <th>Date</th>
                     <th>Type</th>
                     <th>Amount (NPR)</th>
-                    <th>Details</th>
+                    <th>Account (User)</th> <th>Reference/Details</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -91,42 +98,51 @@
                     <td>2025-12-14</td>
                     <td><span class="withdrawal">Withdrawal</span></td>
                     <td><span class="withdrawal">-500.00</span></td>
-                    <td>To Khalti (Fee: Rs 100.00)</td>
+                    <td><span class="account-info">Khalti (98XXXXXXXX)</span></td> <td>Processed (Fee: Rs 50.00)</td>
                     <td><span class="status-success">Completed</span></td>
                 </tr>
+                
+                <tr>
+                    <td>2025-12-14</td>
+                    <td><span class="withdrawal">Withdrawal</span></td>
+                    <td><span class="withdrawal">-1,500.00</span></td>
+                    <td><span class="account-info">eSewa (98XXXXXXXX)</span></td> <td>Processed (Fee: Rs 150.00)</td>
+                    <td><span class="status-success">Completed</span></td>
+                </tr>
+                
                 <tr>
                     <td>2025-12-13</td>
                     <td><span class="bonus">Bonus</span></td>
                     <td><span class="deposit">+10.00</span></td>
-                    <td>Daily Check-in Reward</td>
+                    <td><span class="account-info">N/A</span></td> <td>Daily Check-in Reward</td>
                     <td><span class="status-success">Completed</span></td>
                 </tr>
                 <tr>
                     <td>2025-12-12</td>
                     <td><span class="deposit">Deposit</span></td>
                     <td><span class="deposit">+1000.00</span></td>
-                    <td>Via Nabil Bank</td>
+                    <td><span class="account-info">Nabil Bank (05XXXXXXXX)</span></td> <td>Bank Transfer TXN12345</td>
                     <td><span class="status-success">Completed</span></td>
                 </tr>
                 <tr>
                     <td>2025-12-10</td>
                     <td><span class="withdrawal">Withdrawal</span></td>
                     <td><span class="withdrawal">-250.00</span></td>
-                    <td>Min Withdrawal Failed</td>
+                    <td><span class="account-info">IME Pay (98XXXXXXXX)</span></td> <td>Min Withdrawal Failed</td>
                     <td><span class="status-failed">Failed</span></td>
                 </tr>
                 <tr>
                     <td>2025-12-08</td>
                     <td><span class="bonus">Bonus</span></td>
                     <td><span class="deposit">+100.00</span></td>
+                    <td><span class="account-info">N/A</span></td>
                     <td>New User Welcome Bonus</td>
                     <td><span class="status-success">Completed</span></td>
                 </tr>
             </tbody>
         </table>
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
 
-        <a href="index.html" class="back-link">← Back to Dashboard</a>
     </div>
-
 </body>
 </html>
