@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw Funds (NPR)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px; /* Slightly wider for the detailed message */
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #dc3545; /* Red for withdrawal */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: left;
+            font-weight: bold;
+            display: none; 
+            line-height: 1.6;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .email-preview {
+            font-size: 0.9em;
+            color: #4CAF50;
+            border-top: 1px dashed #c3e6cb;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        .back-link { 
+            display: block; 
+            margin-top: 20px; 
+            text-align: center; 
+            color: #3f51b5; 
+            text-decoration: none; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>💸 Withdraw Funds (NPR)</h2>
+
+    <div id="balanceDisplay">
+        <label>Current Balance:</label>
+        <p style="font-size: 24px; color: #007bff; font-weight: bold;">NPR <span id="current-balance">0.00</span></p>
+    </div>
+
+    <form id="withdrawForm" onsubmit="return handleWithdrawal(event)">
+        <label for="amount">Withdrawal Amount (NPR)</label>
+        <input type="number" id="amount" placeholder="Minimum NPR 500" min="500" step="1" required>
+
+        <button type="submit">Complete Withdrawal</button>
+    </form>
+
+    <div id="statusMessage" class="message"></div>
+    
+    <a href="profile.html" class="back-link">← Back to Profile Dashboard</a>
+</div>
+
+<script>
+    // Constants
+    const BALANCE_STORAGE_KEY = 'profileBalance';
+    const MINIMUM_WITHDRAWAL = 500; 
+    const WITHDRAWAL_TAX_RATE = 0.20; // 20% Tax
+    const RECRUITMENT_BONUS = 100.00; 
+
+    // --- Utility Functions ---
+
+    const getBalance = () => {
+        if (!localStorage.getItem(BALANCE_STORAGE_KEY)) {
+             localStorage.setItem(BALANCE_STORAGE_KEY, RECRUITMENT_BONUS.toFixed(2));
+             return RECRUITMENT_BONUS;
+        }
+        return parseFloat(localStorage.getItem(BALANCE_STORAGE_KEY));
+    };
+
+    const updateBalanceDisplay = () => {
+        const balanceElement = document.getElementById('current-balance');
+        balanceElement.textContent = getBalance().toFixed(2);
+    };
+
+    // --- Main Withdrawal Logic ---
+    function handleWithdrawal(event) {
+        event.preventDefault(); 
+
+        const amountInput = document.getElementById('amount');
+        const amount = parseFloat(amountInput.value);
+        const statusMessage = document.getElementById('statusMessage');
+        let currentBalance = getBalance();
+
+        statusMessage.style.display = 'block';
+        statusMessage.className = 'message'; 
+        
+        if (isNaN(amount) || amount < MINIMUM_WITHDRAWAL) {
+            statusMessage.classList.add('error');
+            statusMessage.textContent = `❌ Error: Minimum withdrawal amount is NPR ${MINIMUM_WITHDRAWAL}.00`;
+            return false;
+        }
+
+        if (amount > currentBalance) {
+            statusMessage.classList.add('error');
+            statusMessage.textContent = `❌ Error: Insufficient funds. Available: NPR ${currentBalance.toFixed(2)}`;
+            return false;
+        }
+
+        // 1. Calculate Tax and Net Amount (20%)
+        const taxAmount = amount * WITHDRAWAL_TAX_RATE;
+        const netAmount = amount - taxAmount;
+
+        // 2. Process Balance Reduction (Deducting GROSS amount)
+        currentBalance -= amount;
+        localStorage.setItem(BALANCE_STORAGE_KEY, currentBalance.toFixed(2));
+        updateBalanceDisplay();
+        
+        // 3. Display Simulation of Email Content
+        const emailAddress = 'shopnixita@gmail.com'; // Requested Email
+        const arrivalTimeMessage = '10:00 AM - 5:00 PM (Sunday - Friday)';
+
+        statusMessage.classList.add('success');
+        statusMessage.innerHTML = `
+            ✅ **Withdrawal Request Submitted!** <br>Your balance has been deducted by **NPR ${amount.toFixed(2)}** (Gross Amount).
+            <br><br>
+            <div class="email-preview">
+                **SIMULATED EMAIL PREVIEW (Sent to ${emailAddress}):**
+                <br>----------------------------------
+                <br>Dear User,
+                <br>We have received your withdrawal request:
+                <br>• Gross Amount: **NPR ${amount.toFixed(2)}**
+                <br>• Tax/Fee (20%): **NPR ${taxAmount.toFixed(2)}**
+                <br>• Net Payout Amount: **NPR ${netAmount.toFixed(2)}**
+                <br>The funds will arrive in your linked bank/wallet during our processing window: **${arrivalTimeMessage}**.
+            </div>
+        `;
+
+        // Clear the input field
+        amountInput.value = '';
+
+        return true;
+    }
+
+    // Initialize balance display when the page loads
+    document.addEventListener('DOMContentLoaded', updateBalanceDisplay);
+</script>
+
+</body>
+</html>
