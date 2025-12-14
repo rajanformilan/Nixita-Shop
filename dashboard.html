@@ -14,6 +14,7 @@
             color: #212529;
             margin: 0;
             padding: 20px;
+            padding-bottom: 70px; /* ADDED: Space for fixed bottom navigation */
         }
         .dashboard-container {
             max-width: 1200px;
@@ -144,6 +145,43 @@
             background-color: #0056b3;
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
         }
+        
+        /* --- BOTTOM NAVIGATION BAR STYLES --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            text-align: center;
+            text-decoration: none;
+            color: #777;
+            flex-grow: 1;
+            padding: 5px 0;
+            font-size: 0.8em;
+            transition: color 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .nav-item.active {
+            color: #007bff;
+            font-weight: bold;
+        }
 
     </style>
 
@@ -167,7 +205,37 @@
         </div>
 
     </div>
+    <div class="bottom-nav">
+        
+        <a href="product_dashboard.html" class="nav-item" id="nav-home">
+            <i>🏡</i> 
+            <span>Home</span>
+        </a>
+        
+        <a href="task.html" class="nav-item" id="nav-task">
+            <i>📑</i> 
+            <span>Task</span>
+        </a>
+        
+        <a href="profile.html" class="nav-item" id="nav-mine">
+            <i>🧑🏻‍🎤</i> 
+            <span>Mine</span>
+        </a>
+
+    </div>
     <script>
+        // Simple logic to highlight the current page's link
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            
+            navItems.forEach(item => {
+                const itemHref = item.getAttribute('href');
+                if (currentPath.endsWith(itemHref)) {
+                    item.classList.add('active');
+                }
+            });
+        });
 
         // =========================================================
         // === FINANCIAL & DATA SETUP ===
@@ -194,18 +262,14 @@
         
         const cpTiers = [300, 800, 1500, 3000, 8000, 15000, 30000, 50000, 100000, 300000];
         
-        // Define Commission Plan Parameters based on the tier index
         const getPlanParameters = (index) => {
             const cp = cpTiers[index];
             
             if (cp >= 50000) {
-                // PREMIUM PLAN: 30 days commission, 15% total return
                 return { duration: 30, returnRate: 0.15 };
             } else if (cp >= 8000) {
-                // HIGH PLAN: 7 days commission, 10% total return
                 return { duration: 7, returnRate: 0.10 };
             } else {
-                // BASE PLAN: 3 days commission, 5% total return
                 return { duration: 3, returnRate: 0.05 };
             }
         };
@@ -228,13 +292,11 @@
             // 1. Generate Product Cards HTML
             cpTiers.forEach((cp, index) => {
 
-                // GET PLAN DETAILS
                 const plan = getPlanParameters(index);
                 const durationText = plan.duration === 30 ? "30 Day" : (plan.duration === 7 ? "7 Day" : "3 Day");
                 
-                // Calculate and format prices 
                 const sellingPriceNPR = (cp / PROFIT_MARGIN_DIVIDER).toFixed(2);
-                const totalCommission = (parseFloat(sellingPriceNPR) * plan.returnRate); // Use the new return rate
+                const totalCommission = (parseFloat(sellingPriceNPR) * plan.returnRate);
                 const imageSource = productImages[index];
                 const productName = productNames[index];
                 
@@ -264,68 +326,53 @@
                 gridContainer.insertAdjacentHTML('beforeend', cardHTML);
             });
             
-            // =========================================================
-            // === 2. CART BUTTON LOGIC (CHECK BALANCE & ACTIVATE) ===
-            // =========================================================
-            
+            // 2. CART BUTTON LOGIC (CHECK BALANCE & ACTIVATE)
             const cartButtons = document.querySelectorAll('.cart-btn');
             cartButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
                     const name = event.currentTarget.dataset.productName;
                     const priceNPR = parseFloat(event.currentTarget.dataset.priceNpr); 
                     
-                    // GET PLAN DATA
                     const duration = parseInt(event.currentTarget.dataset.duration);
                     const totalReturn = parseFloat(event.currentTarget.dataset.totalReturn);
-                    
-                    // Calculate Daily Bonus based on total return and duration
                     const dailyBonusAmount = (totalReturn / duration); 
 
-                    // 1. CHECK FOR ACTIVE PLAN
                     if (localStorage.getItem('sevenDayBonus') && JSON.parse(localStorage.getItem('sevenDayBonus')).activated) {
                         alert('❌ You already have an active commission plan. Please wait until the current plan finishes to purchase a new one.');
                         return;
                     }
 
-                    // 2. CHECK BALANCE
                     let currentBalance = getBalance();
 
                     if (currentBalance < priceNPR) {
                         alert(`❌ Insufficient Balance. You need NPR ${priceNPR.toFixed(2)} to activate "${name}". Your current balance is only NPR ${currentBalance.toFixed(2)}.`);
-                        return; // Stop the process if balance is too low
+                        return;
                     }
 
-                    // --- CONFIRMATION (SIMULATES PAYMENT) ---
                     if (!confirm(`Confirm Purchase/Activation of "${name}" for NPR ${priceNPR.toFixed(2)}? \n\nThis will start a ${duration}-Day Commission Plan, providing you a total return of NPR ${totalReturn.toFixed(2)}. \n\nYour remaining balance will be NPR ${(currentBalance - priceNPR).toFixed(2)}`)) {
                         return;
                     }
 
-                    // 3. DEDUCT COST AND ACTIVATE PLAN
-
-                    // a) DEDUCT COST 
                     currentBalance -= priceNPR;
-                    setBalance(currentBalance); // Save the new balance immediately
+                    setBalance(currentBalance);
 
-                    // b) ACTIVATE COMMISSION PLAN
                     const bonusData = {
                         activated: true,
                         planName: name,
                         startDate: new Date().toISOString().split('T')[0], 
                         daysRemaining: duration, 
-                        dailyBonusAmount: dailyBonusAmount, // Daily amount calculated here
+                        dailyBonusAmount: dailyBonusAmount,
                         claimedDates: [] 
                     };
                     localStorage.setItem('sevenDayBonus', JSON.stringify(bonusData));
                     
-                    // c) SUCCESS MESSAGE AND REDIRECT
                     alert(`✅ Purchase Successful! NPR ${priceNPR.toFixed(2)} deducted. ${duration}-Day Commission Plan Activated for "${name}".`);
                     
-                    // Redirect to the task page where they can claim the bonus.
                     window.location.href = `task.html`; 
                 });
             });
             
-            // 3. Attach Event Listener for "Become a Dealer" Button
+            // 3. Dealer Button
             const dealerBtn = document.getElementById('dealer-btn');
             dealerBtn.addEventListener('click', () => {
                 window.location.href = 'dealer.html';
