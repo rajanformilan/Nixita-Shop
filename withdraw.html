@@ -20,7 +20,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 450px; /* Slightly wider for the detailed message */
+            max-width: 450px;
         }
         h2 {
             color: #333;
@@ -45,7 +45,7 @@
         button {
             width: 100%;
             padding: 12px;
-            background-color: #dc3545; /* Red for withdrawal */
+            background-color: #dc3545; /* Red for withdrawal action */
             color: white;
             border: none;
             border-radius: 5px;
@@ -89,39 +89,54 @@
             color: #3f51b5; 
             text-decoration: none; 
         }
+        /* Fee Notice Styling - Now Dark Grey */
+        .fee-notice {
+            font-size: 0.9em; 
+            color: #6c757d; /* Dark grey for a neutral notice */
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
+
 <body>
-
 <div class="container">
+
     <h2>💸 Withdraw Funds (NPR)</h2>
-
     <div id="balanceDisplay">
+
         <label>Current Balance:</label>
-        <p style="font-size: 24px; color: #007bff; font-weight: bold;">NPR <span id="current-balance">0.00</span></p>
+
+        <p style="font-size: 24px; color: #007bff; font-weight: bold; margin-bottom: 20px;">NPR <span id="current-balance">0.00</span></p>
+
     </div>
-
-    <form id="withdrawForm" onsubmit="return handleWithdrawal(event)">
-        <label for="amount">Withdrawal Amount (NPR)</label>
-        <input type="number" id="amount" placeholder="Minimum NPR 500" min="500" step="1" required>
-
-        <button type="submit">Complete Withdrawal</button>
-    </form>
-
-    <div id="statusMessage" class="message"></div>
     
-    <a href="profile.html" class="back-link">← Back to Profile Dashboard</a>
-</div>
+    <form id="withdrawForm" onsubmit="return handleWithdrawal(event)">
 
+        <label for="amount">Withdrawal Amount (NPR)</label>
+
+        <input type="number" id="amount" placeholder="Minimum NPR 500" min="500" step="1" required>
+        <button type="submit">Complete Withdrawal</button>
+        
+        <p class="fee-notice">*A **10%** fee/tax is applied to all withdrawals.</p>
+
+    </form>
+    
+    <div id="statusMessage" class="message"></div>
+
+    <a href="profile.html" class="back-link">← Back to Profile Dashboard</a>
+
+</div>
 <script>
+
     // Constants
     const BALANCE_STORAGE_KEY = 'profileBalance';
     const MINIMUM_WITHDRAWAL = 500; 
-    const WITHDRAWAL_TAX_RATE = 0.20; // 20% Tax
+    const WITHDRAWAL_TAX_RATE = 0.10; // 10% Tax
     const RECRUITMENT_BONUS = 100.00; 
+    const ADMIN_EMAIL = 'shopnixita@gmail.com'; 
 
     // --- Utility Functions ---
-
     const getBalance = () => {
         if (!localStorage.getItem(BALANCE_STORAGE_KEY)) {
              localStorage.setItem(BALANCE_STORAGE_KEY, RECRUITMENT_BONUS.toFixed(2));
@@ -129,21 +144,18 @@
         }
         return parseFloat(localStorage.getItem(BALANCE_STORAGE_KEY));
     };
-
     const updateBalanceDisplay = () => {
         const balanceElement = document.getElementById('current-balance');
         balanceElement.textContent = getBalance().toFixed(2);
     };
-
     // --- Main Withdrawal Logic ---
     function handleWithdrawal(event) {
         event.preventDefault(); 
-
         const amountInput = document.getElementById('amount');
         const amount = parseFloat(amountInput.value);
         const statusMessage = document.getElementById('statusMessage');
         let currentBalance = getBalance();
-
+        
         statusMessage.style.display = 'block';
         statusMessage.className = 'message'; 
         
@@ -152,51 +164,42 @@
             statusMessage.textContent = `❌ Error: Minimum withdrawal amount is NPR ${MINIMUM_WITHDRAWAL}.00`;
             return false;
         }
-
         if (amount > currentBalance) {
             statusMessage.classList.add('error');
             statusMessage.textContent = `❌ Error: Insufficient funds. Available: NPR ${currentBalance.toFixed(2)}`;
             return false;
         }
-
-        // 1. Calculate Tax and Net Amount (20%)
+        // 1. Calculate Tax and Net Amount (10%)
         const taxAmount = amount * WITHDRAWAL_TAX_RATE;
         const netAmount = amount - taxAmount;
-
         // 2. Process Balance Reduction (Deducting GROSS amount)
         currentBalance -= amount;
         localStorage.setItem(BALANCE_STORAGE_KEY, currentBalance.toFixed(2));
         updateBalanceDisplay();
         
         // 3. Display Simulation of Email Content
-        const emailAddress = 'shopnixita@gmail.com'; // Requested Email
         const arrivalTimeMessage = '10:00 AM - 5:00 PM (Sunday - Friday)';
-
         statusMessage.classList.add('success');
         statusMessage.innerHTML = `
             ✅ **Withdrawal Request Submitted!** <br>Your balance has been deducted by **NPR ${amount.toFixed(2)}** (Gross Amount).
             <br><br>
             <div class="email-preview">
-                **SIMULATED EMAIL PREVIEW (Sent to ${emailAddress}):**
+                **SIMULATED EMAIL PREVIEW (Sent to ${ADMIN_EMAIL}):**
                 <br>----------------------------------
                 <br>Dear User,
                 <br>We have received your withdrawal request:
                 <br>• Gross Amount: **NPR ${amount.toFixed(2)}**
-                <br>• Tax/Fee (20%): **NPR ${taxAmount.toFixed(2)}**
+                <br>• Tax/Fee (10%): **NPR ${taxAmount.toFixed(2)}**
                 <br>• Net Payout Amount: **NPR ${netAmount.toFixed(2)}**
                 <br>The funds will arrive in your linked bank/wallet during our processing window: **${arrivalTimeMessage}**.
             </div>
         `;
-
         // Clear the input field
         amountInput.value = '';
-
         return true;
     }
-
     // Initialize balance display when the page loads
     document.addEventListener('DOMContentLoaded', updateBalanceDisplay);
 </script>
-
 </body>
 </html>
