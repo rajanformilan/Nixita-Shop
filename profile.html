@@ -84,8 +84,8 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.3s;
             font-size: 1em;
+            transition: background-color 0.3s;
         }
         .primary-btn { background-color: #03a9f4; color: white; }
         .secondary-btn { background-color: #f44336; color: white; }
@@ -120,7 +120,7 @@
         .setting-content { display: none; padding: 20px; border-top: 1px solid #e0e0e0; }
         .setting-content.show { display: block; }
 
-        /* --- BOTTOM NAVIGATION BAR STYLES (MATCHES OTHERS) --- */
+        /* --- BOTTOM NAVIGATION BAR STYLES --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -166,7 +166,7 @@
             <div class="user-info">
                 <div class="profile-pic">U</div>
                 <h1>Welcome Back, User Name!</h1>
-                <p>User ID: <span id="user-id">1234567</span></p>
+                <p>User ID: <span id="user-id"></span></p>
             </div>
         </header>
 
@@ -197,8 +197,7 @@
 
             <div class="card invite-card">
                 <h3>💌 Invite & Earn</h3>
-                <p>Referral Code: <span id="referral-code">ALPHA-789</span></p>
-                <button class="action-btn" id="invite-btn">Share Invite Link</button>
+                <p>Referral Code: <span id="referral-code"></span></p> <button class="action-btn" id="invite-btn">Share Invite Link</button>
             </div>
 
         </section>
@@ -269,26 +268,64 @@
 
     <div class="bottom-nav">
         
-        <a href="dashboard.html" class="nav-item" id="nav-home">
-            <i>🏡</i> 
+        <a href="product_dashboard.html" class="nav-item" id="nav-home">
+            <i>🏠</i> 
             <span>Home</span>
         </a>
         
         <a href="task.html" class="nav-item" id="nav-task">
-            <i>📑</i> 
+            <i>✅</i> 
             <span>Task</span>
         </a>
         
         <a href="profile.html" class="nav-item" id="nav-mine">
-            <i>🧑🏻‍🎤</i> 
+            <i>👤</i> 
             <span>Mine</span>
         </a>
 
     </div>
     
     <script>
+        // Helper function to generate a random alphanumeric code (e.g., ALPHA-4B9F)
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = 'REF-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+
         document.addEventListener('DOMContentLoaded', () => {
             
+            // === USER ID GENERATION/RETRIEVAL LOGIC ===
+            const userIdDisplay = document.getElementById('user-id');
+            const storedUserId = localStorage.getItem('uniqueUserId');
+
+            if (storedUserId) {
+                userIdDisplay.textContent = storedUserId;
+            } else {
+                const newUserId = Math.floor(100000 + Math.random() * 900000); // 6-digit number
+                localStorage.setItem('uniqueUserId', newUserId);
+                userIdDisplay.textContent = newUserId;
+            }
+            
+            // === REFERRAL CODE GENERATION/RETRIEVAL LOGIC (New) ===
+            const referralCodeDisplay = document.getElementById('referral-code');
+            const storedReferralCode = localStorage.getItem('uniqueReferralCode');
+
+            if (storedReferralCode) {
+                // If code exists, use it
+                referralCodeDisplay.textContent = storedReferralCode;
+            } else {
+                // If code does not exist, generate a new one and store it
+                const newCode = generateReferralCode();
+                localStorage.setItem('uniqueReferralCode', newCode);
+                referralCodeDisplay.textContent = newCode;
+            }
+            // ===========================================
+
             // === NAVIGATION ACTIVE STATE LOGIC ===
             const currentPath = window.location.pathname;
             const navItems = document.querySelectorAll('.bottom-nav .nav-item');
@@ -299,7 +336,7 @@
                     item.classList.add('active'); // Highlight the current page
                 }
             });
-
+            // ===========================================
 
             const RECRUITMENT_BONUS = 100.00; 
             
@@ -373,9 +410,10 @@
 
             // --- Invite Action ---
             document.getElementById('invite-btn').addEventListener('click', () => {
-                const referralCode = document.getElementById('referral-code').textContent;
+                // Now uses the dynamically loaded code
+                const referralCode = referralCodeDisplay.textContent; 
 
-                navigator.clipboard.writeText(`Check out this app! Use my code: ${referralCode}`)
+                navigator.clipboard.writeText(`Check out this app! Use my referral code: ${referralCode}`)
                     .then(() => {
                         alert(`Invite code (${referralCode}) copied to clipboard!`);
                     })
