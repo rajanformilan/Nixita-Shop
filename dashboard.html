@@ -7,6 +7,40 @@
     <title>Dashboard | Purchase & Dealer Registration</title>
 
     <style>
+        /* 1. Set the body to relative for absolute positioning to work predictably */
+body {
+    /* Set padding to ensure the content doesn't get hidden underneath the circle */
+    padding-top: 60px; 
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* 2. Container for the circle and positioning */
+.profile-circle-container {
+    /* Positioning */
+    position: absolute;
+    top: 15px; /* Distance from the top edge */
+    right: 20px; /* Distance from the right edge */
+    z-index: 1000; /* Ensure it stays above other elements */
+
+    /* Circle Definition */
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%; /* Makes the container round */
+    overflow: hidden; /* **Crucial:** Crops the image to the circle shape */
+    border: 3px solid #f0f0f0; /* Optional: a light border for contrast */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+/* 3. Image Styling */
+.profile-image {
+    /* Make the image fill the entire container */
+    width: 100%;
+    height: 100%;
+    /* Ensure the image covers the area without being stretched */
+    object-fit: cover; 
+}
         /* --- GLOBAL STYLES --- */
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -187,6 +221,13 @@
 
 </head>
 <body>
+    <div class="profile-circle-container">
+        <a href="admin_login.html">
+    <img src="ad.jpg" alt="Admin Profile" class="profile-image">
+    </a>
+</div>
+
+<br>
 
     <div class="dashboard-container">
         
@@ -207,7 +248,7 @@
     </div>
     <div class="bottom-nav">
         
-        <a href="dashboard.html" class="nav-item" id="nav-home">
+        <a href="product_dashboard.html" class="nav-item" id="nav-home">
             <i>🏡</i> 
             <span>Home</span>
         </a>
