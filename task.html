@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Commission & Balance (Task Center)</title>
@@ -13,6 +14,7 @@
             color: #212529;
             margin: 0;
             padding: 20px;
+            padding-bottom: 70px; /* ADDED: Space for fixed bottom navigation */
         }
         .dashboard-container {
             max-width: 600px;
@@ -98,11 +100,47 @@
             text-decoration: none;
             font-weight: bold;
         }
+
+        /* --- BOTTOM NAVIGATION BAR STYLES --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            text-align: center;
+            text-decoration: none;
+            color: #777;
+            flex-grow: 1;
+            padding: 5px 0;
+            font-size: 0.8em;
+            transition: color 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .nav-item.active {
+            color: #007bff; /* Highlight color for the current page */
+            font-weight: bold;
+        }
     </style>
-
 </head>
-<body>
 
+<body>
     <div class="dashboard-container">
         
         <h2>💰 Daily Commission Center</h2>
@@ -121,15 +159,58 @@
         </div>
 
         <a href="product_dashboard.html" class="back-link">← Go back to Shop</a>
+        <a href="profile.html" class="back-link" style="margin-top: 10px;">👤 Go to Profile</a>
 
     </div>
 
+    <div class="bottom-nav">
+        
+        <a href="product_dashboard.html" class="nav-item" id="nav-home">
+            <i>🏡</i> 
+            <span>Home</span>
+        </a>
+        
+        <a href="task.html" class="nav-item" id="nav-task">
+            <i>📑</i> 
+            <span>Task</span>
+        </a>
+        
+        <a href="profile.html" class="nav-item" id="nav-mine">
+            <i>🧑🏻‍🎤</i> 
+            <span>Mine</span>
+        </a>
+
+    </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
+            // === ADDED: NAVIGATION ACTIVE STATE LOGIC ===
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            
+            navItems.forEach(item => {
+                const itemHref = item.getAttribute('href');
+                // We check if the current path ends with the item's href (e.g., /task.html)
+                if (currentPath.endsWith(itemHref)) {
+                    item.classList.add('active'); 
+                }
+            });
+            // ===========================================
+
             // --- FINANCIAL & STORAGE UTILITIES ---
             // Get/Set Initial Balance from Local Storage
-            let currentBalance = parseFloat(localStorage.getItem('profileBalance')) || 100.00;
+            const RECRUITMENT_BONUS = 100.00;
+            const getBalance = () => {
+                if (!localStorage.getItem('profileBalance')) {
+                    localStorage.setItem('profileBalance', RECRUITMENT_BONUS.toFixed(2));
+                    return RECRUITMENT_BONUS;
+                }
+                return parseFloat(localStorage.getItem('profileBalance'));
+            };
+
+            let currentBalance = getBalance();
+
             const balanceDisplay = document.getElementById('current-balance');
             balanceDisplay.textContent = currentBalance.toFixed(2);
             
@@ -177,8 +258,8 @@
                         if (commissionData.daysRemaining <= 0) {
                             commissionData.activated = false;
                         }
-
                         localStorage.setItem('sevenDayBonus', JSON.stringify(commissionData));
+
                         
                         // 3. UPDATE UI
                         document.getElementById('daily-claim-btn').disabled = true;
@@ -188,11 +269,12 @@
                         document.querySelector('.days-left').textContent = `Days Remaining: ${commissionData.daysRemaining > 0 ? commissionData.daysRemaining : 0}`;
 
                         if (commissionData.daysRemaining <= 0) {
-                             setTimeout(() => {
-                                 alert('Congratulations! Your commission plan is now complete. Time to purchase a new product!');
-                                 window.location.reload();
-                             }, 1000);
+                            setTimeout(() => {
+                                alert('Congratulations! Your commission plan is now complete. Time to purchase a new product!');
+                                window.location.reload();
+                            }, 1000);
                         }
+
                     });
                 } else {
                     claimStatus.textContent = 'You have already claimed for today. Next claim available tomorrow.';
@@ -208,8 +290,8 @@
                     <p>Activate a plan by purchasing a product on the <a href="product_dashboard.html" style="color: #007bff; font-weight: bold;">Shop Page</a>.</p>
                 `;
             }
-
         });
+
     </script>
 </body>
 </html>
