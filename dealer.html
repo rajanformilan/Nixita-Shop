@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dealer Registration | Payment Confirmation (Yellow Theme)</title>
+    <style>
+        /* --- Yellow Theme Variables --- */
+        :root {
+            --color-primary: #ffc107; /* Bright Yellow/Gold */
+            --color-secondary: #007bff; /* Blue for contrast/links */
+            --color-success: #1a7f43; /* Green for success */
+            --color-text: #333;
+            --color-background: #fff8e1; /* Very Light Yellow Background */
+            --color-card: #ffffff;
+            --color-highlight-bg: #fffbe6;
+        }
+
+        /* --- General Styling --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            padding: 20px;
+            text-align: center;
+        }
+        .checkout-container {
+            max-width: 650px;
+            margin: 20px auto;
+            background: var(--color-card);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--color-primary); /* Yellow border */
+            text-align: left;
+        }
+        h2 {
+            color: var(--color-success); /* Green for main title contrast */
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: var(--color-primary); 
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        /* --- Payment Amount Highlight --- */
+        .payment-info {
+            background-color: var(--color-highlight-bg); 
+            border: 2px solid var(--color-primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .payment-info p {
+            font-size: 1.1em;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+        .payment-info strong {
+            color: #d35400; /* Darker orange for emphasis */
+            font-size: 1.2em;
+        }
+        
+        /* --- Bank Details Box --- */
+        .bank-details-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-bottom: 25px;
+        }
+        .bank-details-box p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .bank-details-box strong {
+            display: inline-block;
+            width: 120px;
+            color: #555;
+        }
+        .qr-code-area {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .qr-code-area img {
+            max-width: 200px; /* Reduced size slightly */
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        /* --- CLEANED BUTTON STYLING (Flexbox) --- */
+        .action-button-group {
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            margin-top: 30px;
+        }
+        .action-button {
+            padding: 12px 25px;
+            background-color: var(--color-primary); /* Yellow button */
+            color: var(--color-text); /* Dark text on yellow */
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.2s, color 0.2s;
+            flex-grow: 0;
+        }
+        .action-button:hover {
+            background-color: #e0a800; /* Darker yellow on hover */
+        }
+        .action-button.back {
+            background-color: #6c757d; /* Grey button for back/secondary action */
+            color: white;
+        }
+        .action-button.back:hover {
+             background-color: #5a6268;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="checkout-container">
+        <h2>🤝 Dealer Registration Payment</h2>
+
+        <h3>NPR 300.00</h3>
+
+        <div class="payment-info">
+            <p style="font-size: 1.2em; font-weight: 600;">
+                Registration Fee: <strong>NPR 300.00</strong>
+            </p>
+            <p>To confirm your Dealer Status, please transfer the exact amount above to the bank details provided below.</p>
+        </div>
+        
+        <h4>Bank Transfer Details:</h4>
+        <div class="bank-details-box">
+            <p><strong>Account Holder:</strong> RAJAN KANDEL</p>
+            <p><strong>Bank Name:</strong> NABIL Bank Limited</p>
+            <p><strong>Account No.:</strong> 05410017510742</p>
+        </div>
+        
+        <div class="qr-code-area">
+            <h4>Or Scan to Pay Instantly:</h4>
+             <img src="qr.jpg" alt="QR Code for Nabil Bank Account" height="200" width="200">
+        </div>
+
+        <p style="text-align: center; margin-top: 30px; font-weight: bold; color: var(--color-success);">
+            After payment, click "Email Proof" to submit your receipt and finalize your registration.
+        </p>
+        
+        <div class="action-button-group">
+            <a href="dashboard.html" class="action-button back">← Back to Shop</a>
+            
+            <a href="mailto:shopnixita@gmail.com?subject=Dealer%20Registration%20Proof%20(NPR%20300)" class="action-button">
+                I Have Paid, Email Proof →
+            </a>
+        </div>
+    </div>
+</body>
+</html>

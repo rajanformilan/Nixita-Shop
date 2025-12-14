@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Purchase & Dealer Registration</title>
+
+    <style>
+        /* --- GLOBAL STYLES --- */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; 
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 18px; 
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); 
+        }
+        h2 {
+            text-align: center;
+            color: #1a7f43; 
+            margin-bottom: 35px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        /* --- DEALER CTA SECTION --- */
+        .dealer-cta {
+            background-color: #e6f7f0; 
+            border: 1px solid #1a7f43;
+            padding: 25px;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .dealer-cta h3 {
+            color: #1a7f43;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        .dealer-cta p {
+            color: #495057;
+        }
+        .dealer-cta button {
+            background-color: #ffc107; 
+            color: #212529;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
+        }
+        .dealer-cta button:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        /* --- PRODUCT GRID --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px; 
+        }
+        .card {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            text-align: center;
+            display: flex; 
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover {
+            transform: translateY(-8px); 
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            border-color: #1a7f43; 
+        }
+        .card img {
+            max-width: 90%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .card h4 {
+            color: #212529;
+            margin: 0 0 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        .price-details {
+            margin-top: auto; 
+            margin-bottom: 20px;
+        }
+        .price-details .selling {
+            font-size: 1.8em; 
+            color: #dc3545; 
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .price-details small {
+            font-size: 0.9em;
+            font-weight: 500;
+            display: block;
+            line-height: 1.4;
+        }
+        .price-details small:first-of-type {
+            color: #1a7f43; 
+        }
+        .price-details small:last-of-type {
+            color: #fd7e14; 
+        }
+
+        /* --- ADD TO CART BUTTON --- */
+        .cart-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+        }
+        .cart-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <div class="dealer-cta">
+            <h3>Want to Earn? Become a Certified Dealer!</h3>
+            <p>Get **10% salaried commission** every month. Click below to register and start earning.</p>
+            <button id="dealer-btn">Become a Dealer</button>
+        </div>
+
+        
+        <h2>🛒 Shop Our Natural & Herbal Collection</h2>
+
+        
+        <div class="product-grid" id="product-grid">
+
+        </div>
+
+    </div>
+    <script>
+
+        // =========================================================
+        // === FINANCIAL & DATA SETUP ===
+        // =========================================================
+        
+        const RECRUITMENT_BONUS = 100.00; // Rs 100 initial bonus
+
+        // Helper functions for Local Storage
+        const getBalance = () => {
+            // If 'profileBalance' is not set, initialize it with the recruitment bonus (100.00)
+            if (!localStorage.getItem('profileBalance')) {
+                localStorage.setItem('profileBalance', RECRUITMENT_BONUS.toFixed(2));
+                return RECRUITMENT_BONUS;
+            }
+            return parseFloat(localStorage.getItem('profileBalance'));
+        };
+        const setBalance = (newBalance) => localStorage.setItem('profileBalance', newBalance.toFixed(2));
+
+        // 1. DATA ARRAYS
+        const productImages = [
+            "1.jpeg", "2.jpeg", "3.jpeg", "4.jpeg", "5.jpg", 
+            "6.png", "7.jpg", "8.jpg", "9.jpg", "10.jpeg"
+        ];
+        
+        const cpTiers = [300, 800, 1500, 3000, 8000, 15000, 30000, 50000, 100000, 300000];
+        
+        // Define Commission Plan Parameters based on the tier index
+        const getPlanParameters = (index) => {
+            const cp = cpTiers[index];
+            
+            if (cp >= 50000) {
+                // PREMIUM PLAN: 30 days commission, 15% total return
+                return { duration: 30, returnRate: 0.15 };
+            } else if (cp >= 8000) {
+                // HIGH PLAN: 7 days commission, 10% total return
+                return { duration: 7, returnRate: 0.10 };
+            } else {
+                // BASE PLAN: 3 days commission, 5% total return
+                return { duration: 3, returnRate: 0.05 };
+            }
+        };
+
+        const productNames = [
+            "Neem & Tulsi Face Wash (3-Day Plan)", "Amla Hair Oil (3-Day Plan)", "Charcoal Toothpaste (3-Day Plan)", 
+            "Rosemary Shampoo (3-Day Plan)", "Sandalwood Soap Bar (7-Day Plan)", "Lavender Body Lotion (7-Day Plan)", 
+            "Citrus Dish Cleaner (7-Day Plan)", "Mineral Deodorant (30-Day Plan)", "Herbal Foot Cream (30-Day Plan)", "Ayurvedic Balm (30-Day Plan)"
+        ];
+
+        
+        // --- Pricing Logic ---
+
+        const PROFIT_MARGIN_DIVIDER = 0.70; 
+
+        const gridContainer = document.getElementById('product-grid');
+        
+        function initializeDashboard() {
+            
+            // 1. Generate Product Cards HTML
+            cpTiers.forEach((cp, index) => {
+
+                // GET PLAN DETAILS
+                const plan = getPlanParameters(index);
+                const durationText = plan.duration === 30 ? "30 Day" : (plan.duration === 7 ? "7 Day" : "3 Day");
+                
+                // Calculate and format prices 
+                const sellingPriceNPR = (cp / PROFIT_MARGIN_DIVIDER).toFixed(2);
+                const totalCommission = (parseFloat(sellingPriceNPR) * plan.returnRate); // Use the new return rate
+                const imageSource = productImages[index];
+                const productName = productNames[index];
+                
+                const cardHTML = `
+                    <div class="card">
+                        <div>
+                            <img src="${imageSource}" alt="${productName}">
+                            <h4>${productName}</h4>
+                        </div>
+                        
+                        <div class="price-details">
+                            <span class="selling">NPR ${parseFloat(sellingPriceNPR).toLocaleString()}</span>
+                            <small style="color: green;">(Total Commission: NPR ${totalCommission.toFixed(2)})</small>
+                            <small style="color: orange; display: block;">Plan Duration: ${durationText}</small>
+                        </div>
+                        
+                        <button class="cart-btn" 
+                                data-product-name="${productName}" 
+                                data-price-npr="${sellingPriceNPR}"
+                                data-duration="${plan.duration}"
+                                data-total-return="${totalCommission.toFixed(2)}">
+                            Add to Cart
+                        </button>
+                    </div>
+                `;
+
+                gridContainer.insertAdjacentHTML('beforeend', cardHTML);
+            });
+            
+            // =========================================================
+            // === 2. CART BUTTON LOGIC (CHECK BALANCE & ACTIVATE) ===
+            // =========================================================
+            
+            const cartButtons = document.querySelectorAll('.cart-btn');
+            cartButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const name = event.currentTarget.dataset.productName;
+                    const priceNPR = parseFloat(event.currentTarget.dataset.priceNpr); 
+                    
+                    // GET PLAN DATA
+                    const duration = parseInt(event.currentTarget.dataset.duration);
+                    const totalReturn = parseFloat(event.currentTarget.dataset.totalReturn);
+                    
+                    // Calculate Daily Bonus based on total return and duration
+                    const dailyBonusAmount = (totalReturn / duration); 
+
+                    // 1. CHECK FOR ACTIVE PLAN
+                    if (localStorage.getItem('sevenDayBonus') && JSON.parse(localStorage.getItem('sevenDayBonus')).activated) {
+                        alert('❌ You already have an active commission plan. Please wait until the current plan finishes to purchase a new one.');
+                        return;
+                    }
+
+                    // 2. CHECK BALANCE
+                    let currentBalance = getBalance();
+
+                    if (currentBalance < priceNPR) {
+                        alert(`❌ Insufficient Balance. You need NPR ${priceNPR.toFixed(2)} to activate "${name}". Your current balance is only NPR ${currentBalance.toFixed(2)}.`);
+                        return; // Stop the process if balance is too low
+                    }
+
+                    // --- CONFIRMATION (SIMULATES PAYMENT) ---
+                    if (!confirm(`Confirm Purchase/Activation of "${name}" for NPR ${priceNPR.toFixed(2)}? \n\nThis will start a ${duration}-Day Commission Plan, providing you a total return of NPR ${totalReturn.toFixed(2)}. \n\nYour remaining balance will be NPR ${(currentBalance - priceNPR).toFixed(2)}`)) {
+                        return;
+                    }
+
+                    // 3. DEDUCT COST AND ACTIVATE PLAN
+
+                    // a) DEDUCT COST 
+                    currentBalance -= priceNPR;
+                    setBalance(currentBalance); // Save the new balance immediately
+
+                    // b) ACTIVATE COMMISSION PLAN
+                    const bonusData = {
+                        activated: true,
+                        planName: name,
+                        startDate: new Date().toISOString().split('T')[0], 
+                        daysRemaining: duration, 
+                        dailyBonusAmount: dailyBonusAmount, // Daily amount calculated here
+                        claimedDates: [] 
+                    };
+                    localStorage.setItem('sevenDayBonus', JSON.stringify(bonusData));
+                    
+                    // c) SUCCESS MESSAGE AND REDIRECT
+                    alert(`✅ Purchase Successful! NPR ${priceNPR.toFixed(2)} deducted. ${duration}-Day Commission Plan Activated for "${name}".`);
+                    
+                    // Redirect to the task page where they can claim the bonus.
+                    window.location.href = `task.html`; 
+                });
+            });
+            
+            // 3. Attach Event Listener for "Become a Dealer" Button
+            const dealerBtn = document.getElementById('dealer-btn');
+            dealerBtn.addEventListener('click', () => {
+                window.location.href = 'dealer.html';
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

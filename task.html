@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Commission & Balance (Task Center)</title>
+
+    <style>
+        /* --- GLOBAL & LAYOUT --- */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; 
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+        }
+        .dashboard-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
+            text-align: center;
+        }
+        h2 {
+            color: #1a7f43; 
+            margin-bottom: 30px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        /* --- BALANCE CARD --- */
+        .balance-card {
+            background-color: #e6f7f0; /* Light Green */
+            border: 2px solid #1a7f43;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .balance-card h3 {
+            color: #1a7f43;
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        .balance-amount {
+            font-size: 3.5em;
+            font-weight: 700;
+            color: #007bff; /* Blue */
+            margin: 5px 0 15px 0;
+        }
+
+        /* --- BONUS CARD --- */
+        .bonus-card {
+            border: 1px solid #ffc107;
+            background-color: #fffde7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .bonus-card h4 {
+            color: #fd7e14;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        .claim-btn {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .claim-btn:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        .claim-btn:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+        .status-message {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #dc3545;
+            min-height: 20px;
+        }
+        .days-left {
+            font-weight: bold;
+            color: #1a7f43;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <h2>💰 Daily Commission Center</h2>
+        
+        <div class="balance-card">
+            <h3>Current Profile Balance (NPR)</h3>
+            <div class="balance-amount">NPR <span id="current-balance">100.00</span></div>
+        </div>
+        
+        <div class="bonus-card" id="commission-card">
+            <h4>🎁 Active Commission Plan</h4>
+            <div id="commission-content">
+                <p>Checking for active commissions...</p>
+            </div>
+            <p class="status-message" id="claim-status"></p>
+        </div>
+
+        <a href="product_dashboard.html" class="back-link">← Go back to Shop</a>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- FINANCIAL & STORAGE UTILITIES ---
+            // Get/Set Initial Balance from Local Storage
+            let currentBalance = parseFloat(localStorage.getItem('profileBalance')) || 100.00;
+            const balanceDisplay = document.getElementById('current-balance');
+            balanceDisplay.textContent = currentBalance.toFixed(2);
+            
+            const saveBalance = () => {
+                localStorage.setItem('profileBalance', currentBalance.toFixed(2));
+                balanceDisplay.textContent = currentBalance.toFixed(2);
+            };
+
+            // --- COMMISSION LOGIC ---
+            const today = new Date().toISOString().split('T')[0];
+            const commissionCard = document.getElementById('commission-card');
+            const commissionContent = document.getElementById('commission-content');
+            const claimStatus = document.getElementById('claim-status');
+
+            // Retrieve commission data (Saved as 'sevenDayBonus' from product_dashboard)
+            let commissionData = JSON.parse(localStorage.getItem('sevenDayBonus'));
+
+            if (commissionData && commissionData.activated && commissionData.daysRemaining > 0) {
+                
+                const daysRemaining = commissionData.daysRemaining;
+                const dailyBonus = commissionData.dailyBonusAmount;
+                const claimed = commissionData.claimedDates.includes(today);
+                const planName = commissionData.planName || 'Activated Product Plan';
+
+                commissionContent.innerHTML = `
+                    <p>Plan Name: <strong>${planName}</strong></p>
+                    <p class="days-left">Days Remaining: ${daysRemaining}</p>
+                    <p>Today's Commission: <span style="font-size: 1.5em; color: #4CAF50; font-weight: bold;">NPR ${dailyBonus.toFixed(2)}</span></p>
+                    <button class="claim-btn" id="daily-claim-btn" ${claimed ? 'disabled' : ''}>
+                        ${claimed ? 'Claimed Today' : 'Claim Commission Now'}
+                    </button>
+                `;
+
+                if (!claimed) {
+                    document.getElementById('daily-claim-btn').addEventListener('click', () => {
+                        
+                        // 1. ADD BONUS TO PROFILE BALANCE
+                        currentBalance += dailyBonus;
+                        saveBalance(); 
+
+                        // 2. UPDATE COMMISSION DATA
+                        commissionData.daysRemaining -= 1;
+                        commissionData.claimedDates.push(today);
+                        
+                        if (commissionData.daysRemaining <= 0) {
+                            commissionData.activated = false;
+                        }
+
+                        localStorage.setItem('sevenDayBonus', JSON.stringify(commissionData));
+                        
+                        // 3. UPDATE UI
+                        document.getElementById('daily-claim-btn').disabled = true;
+                        document.getElementById('daily-claim-btn').textContent = 'Claimed Today';
+                        claimStatus.textContent = `✅ Success! +NPR ${dailyBonus.toFixed(2)} added to your balance.`;
+                        claimStatus.style.color = '#4CAF50';
+                        document.querySelector('.days-left').textContent = `Days Remaining: ${commissionData.daysRemaining > 0 ? commissionData.daysRemaining : 0}`;
+
+                        if (commissionData.daysRemaining <= 0) {
+                             setTimeout(() => {
+                                 alert('Congratulations! Your commission plan is now complete. Time to purchase a new product!');
+                                 window.location.reload();
+                             }, 1000);
+                        }
+                    });
+                } else {
+                    claimStatus.textContent = 'You have already claimed for today. Next claim available tomorrow.';
+                    claimStatus.style.color = '#ff9800';
+                }
+
+            } else {
+                // No active plan or plan is finished
+                commissionCard.style.backgroundColor = '#f8f9fa';
+                commissionCard.style.borderColor = '#ccc';
+                commissionContent.innerHTML = `
+                    <p>No active commission plan found.</p>
+                    <p>Activate a plan by purchasing a product on the <a href="product_dashboard.html" style="color: #007bff; font-weight: bold;">Shop Page</a>.</p>
+                `;
+            }
+
+        });
+    </script>
+</body>
+</html>

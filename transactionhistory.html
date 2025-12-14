@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <style>
+        /* --- General Layout --- */
+        body { 
+            font-family: sans-serif; 
+            background-color: #f4f7fa; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .container { 
+            max-width: 800px; 
+            width: 100%; 
+            background-color: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+        }
+        h1 { 
+            color: #3f51b5; 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+        }
+        
+        /* --- History Table Styles --- */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .history-table th, .history-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .history-table th {
+            background-color: #e8eaf6; /* Light blue header */
+            color: #3f51b5;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        .history-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* --- Status & Amount Colors --- */
+        .deposit { color: #4CAF50; font-weight: bold; } /* Green */
+        .withdrawal { color: #f44336; font-weight: bold; } /* Red */
+        .bonus { color: #ff9800; font-weight: bold; } /* Orange */
+        .fee { color: #f44336; } /* Red for small text */
+        
+        .status-success { color: #4CAF50; }
+        .status-pending { color: #ff9800; }
+        .status-failed { color: #f44336; }
+
+        .back-link { 
+            display: block; 
+            margin-top: 25px; 
+            text-align: center; 
+            color: #3f51b5; 
+            text-decoration: none; 
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📜 Transaction History</h1>
+        <p>Review all your account activity including deposits, withdrawals, and bonuses.</p>
+        
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount (NPR)</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2025-12-14</td>
+                    <td><span class="withdrawal">Withdrawal</span></td>
+                    <td><span class="withdrawal">-500.00</span></td>
+                    <td>To Khalti (Fee: Rs 100.00)</td>
+                    <td><span class="status-success">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>2025-12-13</td>
+                    <td><span class="bonus">Bonus</span></td>
+                    <td><span class="deposit">+10.00</span></td>
+                    <td>Daily Check-in Reward</td>
+                    <td><span class="status-success">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>2025-12-12</td>
+                    <td><span class="deposit">Deposit</span></td>
+                    <td><span class="deposit">+1000.00</span></td>
+                    <td>Via Nabil Bank</td>
+                    <td><span class="status-success">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>2025-12-10</td>
+                    <td><span class="withdrawal">Withdrawal</span></td>
+                    <td><span class="withdrawal">-250.00</span></td>
+                    <td>Min Withdrawal Failed</td>
+                    <td><span class="status-failed">Failed</span></td>
+                </tr>
+                <tr>
+                    <td>2025-12-08</td>
+                    <td><span class="bonus">Bonus</span></td>
+                    <td><span class="deposit">+100.00</span></td>
+                    <td>New User Welcome Bonus</td>
+                    <td><span class="status-success">Completed</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+</body>
+</html>

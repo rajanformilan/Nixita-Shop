@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank & Wallet Settings</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background-color: #f4f7fa; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .container { 
+            max-width: 600px; 
+            width: 100%; 
+            background-color: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+        }
+        h1 { 
+            color: #3f51b5; 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+        }
+        
+        /* --- Form Styles --- */
+        form label { 
+            display: block; 
+            margin: 15px 0 5px; 
+            font-weight: bold; 
+            color: #555; 
+        }
+        input[type="text"], input[type="tel"], select { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+        }
+        
+        /* Green button for updating financial info */
+        .action-btn { 
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-top: 20px; 
+            width: 100%; 
+        }
+        .action-btn:hover { 
+            opacity: 0.8; 
+        }
+        .status-message { 
+            font-weight: bold; 
+            margin-top: 15px; 
+            min-height: 20px; 
+            text-align: center; 
+        }
+        
+        .note {
+            font-size: 0.9em;
+            color: #f44336;
+            margin-top: -5px;
+            margin-bottom: 15px;
+        }
+
+        .back-link { 
+            display: block; 
+            margin-top: 20px; 
+            text-align: center; 
+            color: #3f51b5; 
+            text-decoration: none; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🏦 Bank & Wallet Settings</h1>
+        <p>Use this form to manage your primary bank account for withdrawals and your preferred digital wallet.</p>
+        
+        <form id="bank-wallet-form">
+            
+            <h2>Bank Account Details (Primary Withdrawal)</h2>
+            
+            <label for="bank-name">Bank Name:</label>
+            <input type="text" id="bank-name" value="Nabil Bank Limited" required>
+            
+            <label for="account-holder">Account Holder Name:</label>
+            <input type="text" id="account-holder" value="User Name" required>
+
+            <label for="account-number">Account Number:</label>
+            <input type="text" id="account-number" value="**** **** **** 4567" disabled>
+            <div class="note">Contact support to change a linked bank account.</div>
+
+            <h2>Digital Wallet Settings (Esewa / Khalti / Imepay / Prabhupay)</h2>
+
+            <label for="wallet-type">Select Primary Wallet:</label>
+            <select id="wallet-type" name="wallet-type" required>
+                <option value="">-- Select Wallet --</option>
+                <option value="esewa">Esewa</option>
+                <option value="khalti">Khalti</option>
+                <option value="imepay">Imepay</option>
+                <option value="prabhupay">Prabhupay</option>
+            </select>
+            
+            <label for="wallet-number">Wallet Registered Mobile Number/ID:</label>
+            <input type="tel" id="wallet-number" placeholder="e.g., 98XXXXXXXX" required>
+            
+            <button type="submit" class="action-btn">Save Financial Settings</button>
+            <p id="bank-status" class="status-message"></p>
+        </form>
+
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        document.getElementById('bank-wallet-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const bankStatus = document.getElementById('bank-status');
+            
+            // Basic Form Validation Check
+            const walletType = document.getElementById('wallet-type').value;
+            const walletNumber = document.getElementById('wallet-number').value;
+
+            if (walletType === "" || walletNumber.trim() === "") {
+                bankStatus.textContent = 'Error: Please select a wallet and enter the corresponding number.';
+                bankStatus.style.color = '#f44336';
+                return;
+            }
+            
+            bankStatus.textContent = 'Saving settings...';
+            bankStatus.style.color = '#ff9800';
+
+            // Simulate network delay and successful update
+            setTimeout(() => {
+                bankStatus.textContent = '✅ Financial settings updated successfully!';
+                bankStatus.style.color = '#4CAF50';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
