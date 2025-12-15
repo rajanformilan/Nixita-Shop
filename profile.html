@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Collapsible User Profile Dashboard</title>
-
     <style>
         /* --- GLOBAL STYLES --- */
         body {
@@ -16,13 +15,11 @@
             justify-content: center;
             padding-bottom: 70px; /* Space for fixed bottom navigation */
         }
-
         .dashboard-container {
             width: 100%;
             max-width: 900px;
             padding: 20px;
         }
-
         /* --- Header & Summary --- */
         .profile-header {
             background-color: #3f51b5;
@@ -33,7 +30,6 @@
             display: flex;
             align-items: center;
         }
-
         .profile-pic {
             width: 60px;
             height: 60px;
@@ -45,7 +41,6 @@
             line-height: 60px;
             margin-right: 20px;
         }
-
         .account-summary-card {
             background-color: white;
             padding: 25px;
@@ -54,30 +49,27 @@
             margin-bottom: 20px;
             text-align: center;
         }
-
         .account-summary-card h2 {
             color: #3f51b5;
             margin-top: 0;
         }
-
         .balance {
             font-size: 3em;
             font-weight: bold;
-            color: #4CAF50; 
+            color: #4CAF50;
             margin: 10px 0 20px 0;
             transition: color 0.5s, transform 0.2s;
         }
+
         .balance.highlight {
-            color: #ff9800; 
+            color: #ff9800;
             transform: scale(1.05);
         }
-
         .action-buttons-group {
             display: flex;
             justify-content: center;
             gap: 15px;
         }
-
         .action-btn {
             padding: 12px 25px;
             border: none;
@@ -87,18 +79,17 @@
             font-size: 1em;
             transition: background-color 0.3s;
         }
+
         .primary-btn { background-color: #03a9f4; color: white; }
         .secondary-btn { background-color: #f44336; color: white; }
         .info-btn { background-color: #ff9800; color: white; }
         .success-btn { background-color: #4CAF50; color: white; }
-
         .engagement-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
-
         .card {
             background-color: white;
             padding: 20px;
@@ -106,20 +97,19 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             text-align: center;
         }
-        
+
         .status-message {
             font-weight: bold;
             margin-top: 10px;
             min-height: 20px;
         }
-        
+
         /* --- COLLAPSIBLE & SETTINGS STYLES --- */
         .settings-section { background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
         .setting-card { background-color: #f9f9f9; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e0e0e0; }
         .setting-header { padding: 15px 20px; background-color: #e8eaf6; color: #3f51b5; border-radius: 8px 8px 0 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.1em; }
         .setting-content { display: none; padding: 20px; border-top: 1px solid #e0e0e0; }
         .setting-content.show { display: block; }
-
         /* --- BOTTOM NAVIGATION BAR STYLES --- */
         .bottom-nav {
             position: fixed;
@@ -135,7 +125,6 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-
         .nav-item {
             text-align: center;
             text-decoration: none;
@@ -145,23 +134,38 @@
             font-size: 0.8em;
             transition: color 0.3s;
         }
-
         .nav-item i {
             font-size: 20px;
             display: block;
             margin-bottom: 3px;
         }
-        
+
         .nav-item.active {
             color: #007bff; /* Active color */
             font-weight: bold;
         }
+        /* Input and Button styles for settings forms */
+        .setting-content form input[type="text"],
+        .setting-content form input[type="email"],
+        .setting-content form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .setting-content form button {
+            margin-top: 10px;
+            width: 100%;
+        }
     </style>
+
 </head>
+
 <body>
-
     <div class="dashboard-container">
-
         <header class="profile-header">
             <div class="user-info">
                 <div class="profile-pic">U</div>
@@ -169,44 +173,37 @@
                 <p>User ID: <span id="user-id"></span></p>
             </div>
         </header>
-
         <section class="account-summary-card">
             <h2>💰 Current Profile Balance</h2>
-            <p class="balance">NPR <span id="current-balance">0.00</span></p>
+            <p class="balance">NPR <span id="current-balance">100.00</span></p>
             <div class="action-buttons-group">
                 <button onclick="window.location.href='recharge.html'" class="action-btn primary-btn" id="recharge-btn">➡️ Recharge</button>
                 <button onclick="window.location.href='withdraw.html'" class="action-btn secondary-btn" id="withdraw-btn">⬅️ Withdraw</button>
                 <button onclick="window.location.href='task.html'" class="action-btn info-btn">🎁 View Commissions</button>
             </div>
         </section>
-
         <section class="engagement-cards">
-
             <div class="card check-in-card">
                 <h3>🗓️ Daily Check-In</h3>
                 <p>Current Streak: <span id="checkin-streak">3 Days</span></p>
                 <button class="action-btn success-btn" id="checkin-btn">Claim Today's Bonus</button>
                 <p class="status-message" id="checkin-status"></p>
             </div>
-
             <div class="card bonus-card">
                 <h3>📈 Total Team Earning</h3>
                 <p style="font-size: 1.5em; color: #007bff; font-weight: bold;">NPR <span id="team-earning">1500.00</span></p>
                 <button class="action-btn primary-btn">Team Details</button>
             </div>
-
             <div class="card invite-card">
                 <h3>💌 Invite & Earn</h3>
                 <p>Referral Code: <span id="referral-code"></span></p> <button class="action-btn" id="invite-btn">Share Invite Link</button>
             </div>
-
         </section>
-        
-        <hr>
 
+
+        <hr>
         <section class="settings-section">
             <h2>⚙️ Account Management</h2>
-
             <div class="setting-card">
                 <div class="setting-header" id="header-profile">
                     <span>👤 User Profile Update</span>
@@ -216,16 +213,13 @@
                     <form id="profile-update-form">
                         <label for="new-username">Username:</label>
                         <input type="text" id="new-username" name="new-username" value="User Name" required>
-
                         <label for="new-email">Email:</label>
                         <input type="email" id="new-email" name="new-email" value="user@example.com" required>
-
                         <button type="submit" class="action-btn primary-btn">Save Profile Changes</button>
                         <p id="profile-status" class="status-message"></p>
                     </form>
                 </div>
             </div>
-
             <div class="setting-card">
                 <div class="setting-header" id="header-password">
                     <span>🔒 Change Password</span>
@@ -235,21 +229,18 @@
                     <form id="password-change-form">
                         <label for="current-password">Current Password:</label>
                         <input type="password" id="current-password" name="current-password" required>
-
                         <label for="new-password">New Password (Min 8 Chars):</label>
                         <input type="password" id="new-password" name="new-password" required>
-
                         <label for="confirm-password">Confirm New Password:</label>
                         <input type="password" id="confirm-password" name="confirm-password" required>
-
                         <button type="submit" class="action-btn secondary-btn">Update Password</button>
                         <p id="password-status" class="status-message"></p>
                     </form>
                 </div>
             </div>
-            
+
             <div class="setting-card">
-                 <div class="setting-header" id="header-links">
+                <div class="setting-header" id="header-links">
                     <span>🔗 Other Account Links</span>
                     <span class="arrow">▼</span>
                 </div>
@@ -261,31 +252,36 @@
                     </ul>
                 </div>
             </div>
-            
+
+
         </section>
-
     </div>
-
     <div class="bottom-nav">
-        
+
         <a href="product_dashboard.html" class="nav-item" id="nav-home">
-            <i>🏠</i> 
+            <i>🏡</i>
             <span>Home</span>
         </a>
-        
+
         <a href="task.html" class="nav-item" id="nav-task">
-            <i>✅</i> 
+            <i>📑</i>
             <span>Task</span>
         </a>
-        
+
         <a href="profile.html" class="nav-item" id="nav-mine">
-            <i>👤</i> 
+            <i>🧑🏻‍🎤</i>
             <span>Mine</span>
         </a>
-
     </div>
-    
+
+
     <script>
+        // --- CONSTANTS ---
+        const RECRUITMENT_BONUS = 100.00;
+        const DAILY_CHECKIN_BONUS = 10.00;
+        const LAST_CHECKIN_KEY = 'lastCheckInDate'; // Key to store last check-in date
+        const CHECKIN_STREAK_KEY = 'checkinStreak'; // Key for the streak count
+
         // Helper function to generate a random alphanumeric code (e.g., ALPHA-4B9F)
         function generateReferralCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -296,193 +292,260 @@
             return code;
         }
 
+        /**
+         * Checks if the user can perform a check-in today.
+         * Returns true if the last check-in was not today (calendar date).
+         */
+        function checkCanCheckIn() {
+            const lastCheckIn = localStorage.getItem(LAST_CHECKIN_KEY);
+            const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
 
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // === USER ID GENERATION/RETRIEVAL LOGIC ===
-            const userIdDisplay = document.getElementById('user-id');
-            const storedUserId = localStorage.getItem('uniqueUserId');
-
-            if (storedUserId) {
-                userIdDisplay.textContent = storedUserId;
-            } else {
-                const newUserId = Math.floor(100000 + Math.random() * 900000); // 6-digit number
-                localStorage.setItem('uniqueUserId', newUserId);
-                userIdDisplay.textContent = newUserId;
+            if (lastCheckIn === today) {
+                return false; // Already checked in today
             }
-            
-            // === REFERRAL CODE GENERATION/RETRIEVAL LOGIC (New) ===
-            const referralCodeDisplay = document.getElementById('referral-code');
-            const storedReferralCode = localStorage.getItem('uniqueReferralCode');
+            return true;
+        }
 
-            if (storedReferralCode) {
-                // If code exists, use it
-                referralCodeDisplay.textContent = storedReferralCode;
-            } else {
-                // If code does not exist, generate a new one and store it
-                const newCode = generateReferralCode();
-                localStorage.setItem('uniqueReferralCode', newCode);
-                referralCodeDisplay.textContent = newCode;
+        // --- Core Balance and Display Functions ---
+
+        const balanceDisplay = document.getElementById('current-balance');
+        const balanceElement = balanceDisplay ? balanceDisplay.closest('.balance') : null;
+
+        const getBalance = () => {
+            if (!localStorage.getItem('profileBalance')) {
+                localStorage.setItem('profileBalance', RECRUITMENT_BONUS.toFixed(2));
+                return RECRUITMENT_BONUS;
             }
-            // ===========================================
+            return parseFloat(localStorage.getItem('profileBalance'));
+        };
 
-            // === NAVIGATION ACTIVE STATE LOGIC ===
-            const currentPath = window.location.pathname;
-            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-            
-            navItems.forEach(item => {
-                const itemHref = item.getAttribute('href');
-                if (currentPath.endsWith(itemHref)) {
-                    item.classList.add('active'); // Highlight the current page
-                }
-            });
-            // ===========================================
-
-            const RECRUITMENT_BONUS = 100.00; 
-            
-            // --- BALANCE DISPLAY & UTILITIES ---
-            const balanceDisplay = document.getElementById('current-balance');
-            const balanceElement = balanceDisplay.closest('.balance');
-
-            const getBalance = () => {
-                if (!localStorage.getItem('profileBalance')) {
-                    localStorage.setItem('profileBalance', RECRUITMENT_BONUS.toFixed(2));
-                    return RECRUITMENT_BONUS;
-                }
-                return parseFloat(localStorage.getItem('profileBalance'));
-            };
-
-            const updateBalanceDisplay = () => {
-                let currentBalance = getBalance();
+        const updateBalanceDisplay = () => {
+            let currentBalance = getBalance();
+            if (balanceDisplay) {
                 balanceDisplay.textContent = currentBalance.toFixed(2);
-                
-                // Add highlight effect (visual satisfaction)
+            }
+
+            // Add highlight effect (visual satisfaction)
+            if (balanceElement) {
                 balanceElement.classList.add('highlight');
                 setTimeout(() => {
                     balanceElement.classList.remove('highlight');
                 }, 500);
-            };
-            
+            }
+        };
+
+        // --- Daily Check-In UI Update Function ---
+
+        const updateCheckInUI = () => {
+            const checkinBtn = document.getElementById('checkin-btn');
+            const checkinStatus = document.getElementById('checkin-status');
+            const checkinStreak = document.getElementById('checkin-streak');
+
+            // Initialize streak if missing
+            let streakCount = parseInt(localStorage.getItem(CHECKIN_STREAK_KEY) || 3);
+            checkinStreak.textContent = `${streakCount} Days`;
+
+            if (checkCanCheckIn()) {
+                // Can check in
+                checkinBtn.disabled = false;
+                checkinBtn.textContent = 'Claim Today\'s Bonus';
+                checkinBtn.style.backgroundColor = '#4CAF50';
+                checkinStatus.textContent = 'Ready to claim +NPR 10.00';
+                checkinStatus.style.color = '#3f51b5';
+            } else {
+                // Already checked in
+                checkinBtn.disabled = true;
+                checkinBtn.textContent = 'Checked In Today!';
+                checkinBtn.style.backgroundColor = '#777777';
+                checkinStatus.textContent = `You have already claimed your bonus today. Next check-in is tomorrow! (Streak: ${streakCount} Days)`;
+                checkinStatus.style.color = '#ff9800';
+            }
+        };
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // === USER ID & REFERRAL CODE LOGIC ===
+            // This section remains the same as it correctly initializes ID and Code once.
+            const userIdDisplay = document.getElementById('user-id');
+            const storedUserId = localStorage.getItem('uniqueUserId');
+            if (storedUserId) {
+                userIdDisplay.textContent = storedUserId;
+            } else {
+                const newUserId = Math.floor(100000 + Math.random() * 900000);
+                localStorage.setItem('uniqueUserId', newUserId);
+                userIdDisplay.textContent = newUserId;
+            }
+
+            const referralCodeDisplay = document.getElementById('referral-code');
+            const storedReferralCode = localStorage.getItem('uniqueReferralCode');
+            if (storedReferralCode) {
+                referralCodeDisplay.textContent = storedReferralCode;
+            } else {
+                const newCode = generateReferralCode();
+                localStorage.setItem('uniqueReferralCode', newCode);
+                referralCodeDisplay.textContent = newCode;
+            }
+
+            // === NAVIGATION ACTIVE STATE LOGIC ===
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            navItems.forEach(item => {
+                const itemHref = item.getAttribute('href');
+                if (currentPath.endsWith(itemHref)) {
+                    item.classList.add('active');
+                }
+            });
+
+            // --- Initial Balance and Check-In UI Load ---
             updateBalanceDisplay();
+            updateCheckInUI();
+
+
+            // --- Daily Check-In Event Listener ---
+
+            const checkinBtn = document.getElementById('checkin-btn');
+            const checkinStatus = document.getElementById('checkin-status');
+            const checkinStreak = document.getElementById('checkin-streak');
+
+            checkinBtn.addEventListener('click', () => {
+                if (checkCanCheckIn()) {
+                    // 1. Update Balance
+                    let currentBalance = getBalance();
+                    currentBalance += DAILY_CHECKIN_BONUS;
+                    localStorage.setItem('profileBalance', currentBalance.toFixed(2));
+
+                    // 2. Update Check-In State (Date and Streak)
+                    const today = new Date().toISOString().slice(0, 10);
+                    localStorage.setItem(LAST_CHECKIN_KEY, today);
+                    
+                    let streakCount = parseInt(localStorage.getItem(CHECKIN_STREAK_KEY) || 3);
+                    streakCount++;
+                    localStorage.setItem(CHECKIN_STREAK_KEY, streakCount);
+
+                    // 3. Update UI
+                    updateBalanceDisplay(); 
+                    updateCheckInUI(); // Update button state and message based on new date
+
+                    checkinStatus.textContent = `✅ Success! Claimed +NPR ${DAILY_CHECKIN_BONUS.toFixed(2)} Bonus.`;
+                    checkinStatus.style.color = '#4CAF50';
+                    checkinStreak.textContent = `${streakCount} Days`;
+
+                } else {
+                    checkinStatus.textContent = 'Error: You have already checked in today.';
+                    checkinStatus.style.color = '#f44336';
+                }
+            });
 
 
             // --- ACCORDION / COLLAPSIBLE TOGGLE LOGIC ---
             const settingHeaders = document.querySelectorAll('.setting-header');
-
             settingHeaders.forEach(header => {
                 header.addEventListener('click', () => {
                     const content = header.nextElementSibling;
+                    const arrow = header.querySelector('.arrow');
+                    
+                    // Close other open sections
+                    document.querySelectorAll('.setting-content.show').forEach(openContent => {
+                        if (openContent !== content) {
+                            openContent.classList.remove('show');
+                            openContent.previousElementSibling.querySelector('.arrow').textContent = '▼';
+                        }
+                    });
+
+                    // Toggle current section
                     content.classList.toggle('show');
-                    header.classList.toggle('active');
+                    if (content.classList.contains('show')) {
+                        arrow.textContent = '▲';
+                    } else {
+                        arrow.textContent = '▼';
+                    }
                 });
             });
 
 
-            // --- Daily Check-In Functionality ---
-            const checkinBtn = document.getElementById('checkin-btn');
-            const checkinStatus = document.getElementById('checkin-status');
-            const checkinStreak = document.getElementById('checkin-streak');
-            
-            let isCheckedIn = false; 
-            let streakCount = 3; 
-
-            checkinBtn.addEventListener('click', () => {
-                if (!isCheckedIn) {
-                    isCheckedIn = true;
-                    streakCount++;
-                    
-                    const checkinBonus = 10.00;
-                    let currentBalance = getBalance();
-                    currentBalance += checkinBonus;
-                    localStorage.setItem('profileBalance', currentBalance.toFixed(2));
-                    updateBalanceDisplay(); // Refresh balance display
-
-                    checkinStatus.textContent = `✅ Checked in! You received +NPR ${checkinBonus.toFixed(2)} Bonus.`;
-                    checkinStatus.style.color = '#4CAF50';
-                    checkinBtn.disabled = true;
-                    checkinBtn.textContent = 'Checked In Today';
-                    checkinStreak.textContent = `${streakCount} Days`;
-
-                } else {
-                    alert('You have already checked in today!');
-                }
-            });
-
             // --- Invite Action ---
-            document.getElementById('invite-btn').addEventListener('click', () => {
-                // Now uses the dynamically loaded code
-                const referralCode = referralCodeDisplay.textContent; 
+            const inviteBtn = document.getElementById('invite-btn');
+            if (inviteBtn) {
+                inviteBtn.addEventListener('click', () => {
+                    const referralCode = referralCodeDisplay.textContent;
+                    // Use a fallback for environments that don't support navigator.clipboard
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(`Check out this app! Use my referral code: ${referralCode}`)
+                            .then(() => {
+                                alert(`Invite code (${referralCode}) copied to clipboard!`);
+                            })
+                            .catch(err => {
+                                console.error('Could not copy text: ', err);
+                                alert(`Invite code is: ${referralCode}`);
+                            });
+                    } else {
+                         // Fallback for older browsers (or if running in a restricted iframe/sandbox)
+                         alert(`Invite code is: ${referralCode} (Could not copy automatically)`);
+                    }
+                });
+            }
 
-                navigator.clipboard.writeText(`Check out this app! Use my referral code: ${referralCode}`)
-                    .then(() => {
-                        alert(`Invite code (${referralCode}) copied to clipboard!`);
-                    })
-                    .catch(err => {
-                        console.error('Could not copy text: ', err);
-                        alert(`Invite code is: ${referralCode}`);
-                    });
-            });
-            
+
             // --- Profile Update Logic ---
             const profileForm = document.getElementById('profile-update-form');
             const profileStatus = document.getElementById('profile-status');
+            if (profileForm) {
+                profileForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    const newUsername = document.getElementById('new-username').value.trim();
 
-            profileForm.addEventListener('submit', (event) => {
-                event.preventDefault(); 
-                const newUsername = document.getElementById('new-username').value.trim();
-                
-                if (newUsername.length < 3) {
-                    profileStatus.textContent = 'Error: Username must be at least 3 characters.';
-                    profileStatus.style.color = '#f44336';
-                    return;
-                }
+                    if (newUsername.length < 3) {
+                        profileStatus.textContent = 'Error: Username must be at least 3 characters.';
+                        profileStatus.style.color = '#f44336';
+                        return;
+                    }
 
-                profileStatus.textContent = 'Saving changes...';
-                profileStatus.style.color = '#ff9800';
-
-                setTimeout(() => {
-                    profileStatus.textContent = '✅ Profile successfully updated!';
-                    profileStatus.style.color = '#4CAF50';
-                }, 100);
-            });
-
+                    profileStatus.textContent = 'Saving changes...';
+                    profileStatus.style.color = '#ff9800';
+                    setTimeout(() => {
+                        profileStatus.textContent = '✅ Profile successfully updated!';
+                        profileStatus.style.color = '#4CAF50';
+                        document.querySelector('.profile-header h1').textContent = `Welcome Back, ${newUsername}!`;
+                    }, 100);
+                });
+            }
 
             // --- Password Change Logic ---
             const passwordForm = document.getElementById('password-change-form');
             const passwordStatus = document.getElementById('password-status');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    const currentPass = document.getElementById('current-password').value;
+                    const newPass = document.getElementById('new-password').value;
+                    const confirmPass = document.getElementById('confirm-password').value;
 
-            passwordForm.addEventListener('submit', (event) => {
-                event.preventDefault(); 
-                const currentPass = document.getElementById('current-password').value;
-                const newPass = document.getElementById('new-password').value;
-                const confirmPass = document.getElementById('confirm-password').value;
-                
-                if (currentPass === "") {
-                    passwordStatus.textContent = 'Error: Please enter your current password.';
-                    passwordStatus.style.color = '#f44336';
-                    return;
-                }
-                if (newPass.length < 8) {
-                    passwordStatus.textContent = 'Error: New password must be at least 8 characters.';
-                    passwordStatus.style.color = '#f44336';
-                    return;
-                }
-                if (newPass !== confirmPass) {
-                    passwordStatus.textContent = 'Error: New password and confirmation do not match.';
-                    passwordStatus.style.color = '#f44336';
- 
-                 return;
-                }
+                    if (currentPass === "") {
+                        passwordStatus.textContent = 'Error: Please enter your current password.';
+                        passwordStatus.style.color = '#f44336';
+                        return;
+                    }
+                    if (newPass.length < 8) {
+                        passwordStatus.textContent = 'Error: New password must be at least 8 characters.';
+                        passwordStatus.style.color = '#f44336';
+                        return;
+                    }
+                    if (newPass !== confirmPass) {
+                        passwordStatus.textContent = 'Error: New password and confirmation do not match.';
+                        passwordStatus.style.color = '#f44336';
+                        return;
+                    }
 
-                passwordStatus.textContent = 'Updating password...';
-                passwordStatus.style.color = '#ff9800';
-
-                setTimeout(() => {
-                    passwordStatus.textContent = '✅ Password updated successfully!';
-                    passwordStatus.style.color = '#4CAF50';
-                    passwordForm.reset();
-                }, 100);
-            });
+                    passwordStatus.textContent = 'Updating password...';
+                    passwordStatus.style.color = '#ff9800';
+                    setTimeout(() => {
+                        passwordStatus.textContent = '✅ Password updated successfully!';
+                        passwordStatus.style.color = '#4CAF50';
+                        passwordForm.reset();
+                    }, 100);
+                });
+            }
         });
     </script>
 </body>
