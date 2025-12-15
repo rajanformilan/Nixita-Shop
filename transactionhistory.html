@@ -53,12 +53,11 @@
         /* --- Status & Amount Colors --- */
         .deposit { color: #4CAF50; font-weight: bold; } 
         .withdrawal { color: #f44336; font-weight: bold; } 
-        .bonus { color: #ff9800; font-weight: bold; } 
+        .bonus, .claim { color: #ff9800; font-weight: bold; } /* Added .claim */
         
         .status-success { color: #4CAF50; }
         .status-pending { color: #ff9800; }
         .status-failed { color: #f44336; }
-
         .empty-message {
             text-align: center;
             padding: 40px;
@@ -68,7 +67,6 @@
             margin-top: 20px;
             font-size: 1.1em;
         }
-
         .back-link { 
             display: block; 
             margin-top: 25px; 
@@ -83,14 +81,11 @@
         }
     </style>
 </head>
-
 <body>
+
     <div class="container">
-
         <h1>📜 Transaction History</h1>
-
-        <p>Review all your account activity, including deposits, withdrawals, and bonuses.</p>
-
+        <p>Review all your account activity, including deposits, withdrawals, bonuses, and daily claims.</p>
         
         <table class="history-table" id="transactionTable" style="display:none;">
             <thead>
@@ -106,43 +101,49 @@
             <tbody id="transactionBody">
                 </tbody>
         </table>
-
+        
         <div id="emptyMessage" class="empty-message" style="display:none;">
             You currently have no transaction history recorded.
         </div>
-
+        
         <a href="index.html" class="back-link">← Back to Dashboard</a>
-
     </div>
-
 <script>
+
     const HISTORY_STORAGE_KEY = 'transactionHistory';
+    const DAILY_CLAIM_KEY = 'dailyClaimsHistory'; // New key for daily claims
     const RECRUITMENT_BONUS = 100.00;
+    const DAILY_CLAIM_AMOUNT = 10.00;
 
     /**
-     * Retrieves the transaction history from local storage.
+     * Retrieves all transaction history (standard txs, bonus, and claims).
      * Initializes with a default welcome bonus if history is empty.
      */
     const getHistory = () => {
-        let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
+        let standardHistory = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
+        let claimsHistory = JSON.parse(localStorage.getItem(DAILY_CLAIM_KEY) || '[]');
         
-        // Check if the initial bonus is missing, and if so, add it for the "real" experience.
-        if (history.length === 0) {
+        // 1. Check/Add Initial Welcome Bonus
+        const hasWelcomeBonus = standardHistory.some(tx => tx.details.includes('Welcome Bonus'));
+        if (!hasWelcomeBonus) {
             const initialBonus = {
-                date: new Date().toISOString().slice(0, 10),
+                date: '2025-12-08', // Fixed date for the initial bonus
                 type: 'Bonus',
                 amount: RECRUITMENT_BONUS,
                 account: 'N/A',
                 details: 'New User Welcome Bonus',
                 status: 'Completed',
             };
-            history.push(initialBonus);
-            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+            standardHistory.push(initialBonus);
+            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(standardHistory));
         }
+
+        // 2. Combine all transaction types
+        let combinedHistory = standardHistory.concat(claimsHistory);
         
-        // Sort by date descending
-        history.sort((a, b) => new Date(b.date) - new Date(a.date));
-        return history;
+        // 3. Sort by date descending
+        combinedHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return combinedHistory;
     };
 
     /**
@@ -156,7 +157,8 @@
         
         tableBody.innerHTML = ''; // Clear existing rows
 
-        if (history.length === 0) {
+        // Check if only the Welcome Bonus exists (it's hardcoded to always exist)
+        if (history.length === 0) { // Should not happen with the Welcome Bonus logic above
             transactionTable.style.display = 'none';
             emptyMessage.style.display = 'block';
             return;
@@ -166,10 +168,11 @@
         emptyMessage.style.display = 'none';
 
         history.forEach(tx => {
-            const isCredit = ['Deposit', 'Bonus'].includes(tx.type);
+            const isCredit = ['Deposit', 'Bonus', 'Claim'].includes(tx.type);
             const amountClass = isCredit ? 'deposit' : 'withdrawal';
             const sign = isCredit ? '+' : '-';
             const statusClass = `status-${tx.status.toLowerCase()}`;
+            const typeClass = tx.type.toLowerCase();
 
             const row = tableBody.insertRow();
             
@@ -177,7 +180,7 @@
             row.insertCell().textContent = tx.date; 
 
             // 2. Type
-            row.insertCell().innerHTML = `<span class="${tx.type.toLowerCase()}">${tx.type}</span>`;
+            row.insertCell().innerHTML = `<span class="${typeClass}">${tx.type}</span>`;
 
             // 3. Amount (NPR)
             row.insertCell().innerHTML = `<span class="${amountClass}">${sign}${tx.amount.toFixed(2)}</span>`;
@@ -193,8 +196,9 @@
         });
     };
 
-    // --- Add a function to simulate recording a transaction (for testing/integration) ---
-    // You would call this function from your deposit/withdrawal pages.
+    /**
+     * Records a standard transaction (Deposit/Withdrawal).
+     */
     const recordTransaction = (type, amount, account, details, status = 'Completed') => {
         const newTx = {
             date: new Date().toISOString().slice(0, 10),
@@ -208,17 +212,43 @@
         history.push(newTx);
         localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
     };
+    
+    /**
+     * Records a Daily Claim transaction.
+     */
+    const recordDailyClaim = (date, status = 'Completed') => {
+        const newClaim = {
+            date: date,
+            type: 'Claim',
+            amount: DAILY_CLAIM_AMOUNT,
+            account: 'N/A',
+            details: `Daily Claim (${date})`,
+            status: status,
+        };
+        let claims = JSON.parse(localStorage.getItem(DAILY_CLAIM_KEY) || '[]');
+        claims.push(newClaim);
+        localStorage.setItem(DAILY_CLAIM_KEY, JSON.stringify(claims));
+    };
+
+    // --- SETUP SAMPLE DATA FOR DEMONSTRATION (Daily Claims and Standard TXs) ---
+    // This runs once to populate history for demonstration purposes only.
+    if (localStorage.getItem('isDemoDataAdded') !== 'true') {
+        // Daily Claims (Sample 3 days of claims)
+        recordDailyClaim('2025-12-11'); 
+        recordDailyClaim('2025-12-12'); 
+        recordDailyClaim('2025-12-13');
+
+        // Standard Transactions (Deposits/Withdrawals)
+        recordTransaction('Deposit', 500.00, 'Khalti (981XXXXXXX)', 'Recharge Confirmation (TXN:KHLT123)', 'Completed');
+        recordTransaction('Withdrawal', 450.00, 'Bank (054XXXXXX)', 'Net Payout (10% fee)', 'Pending');
+        recordTransaction('Withdrawal', 250.00, 'Khalti (981XXXXXXX)', 'Min Withdrawal requirement not met', 'Failed');
+
+        localStorage.setItem('isDemoDataAdded', 'true'); // Prevent re-adding on subsequent loads
+    }
+
 
     // --- RUN ON LOAD ---
     document.addEventListener('DOMContentLoaded', renderHistory);
-    
-    // --- Sample Transaction Recording for Demonstration ---
-    // If you uncomment these lines and refresh the history page, you'll see these transactions.
-    /*
-    recordTransaction('Deposit', 500.00, 'Khalti (981XXXXXXX)', 'Recharge Confirmation', 'Completed');
-    recordTransaction('Withdrawal', 450.00, 'Bank (054XXXXXX)', 'Net Payout', 'Pending');
-    recordTransaction('Bonus', 25.00, 'N/A', 'Referral Commission', 'Completed');
-    */
     
 </script>
 </body>
