@@ -53,7 +53,6 @@
         /* --- Status & Amount Colors --- */
         .deposit { color: #4CAF50; font-weight: bold; } 
         .withdrawal { color: #f44336; font-weight: bold; } 
-        /* Task and Bonus/Claim will use a similar orange/gold color */
         .bonus, .claim, .taskreward { color: #ff9800; font-weight: bold; } 
         
         .status-success { color: #4CAF50; }
@@ -113,10 +112,31 @@
 
     const HISTORY_STORAGE_KEY = 'transactionHistory';
     const DAILY_CLAIM_KEY = 'dailyClaimsHistory';
-    const TASK_REWARD_KEY = 'taskRewardsHistory'; // New key for task rewards
+    const TASK_REWARD_KEY = 'taskRewardsHistory';
     const RECRUITMENT_BONUS = 100.00;
     const DAILY_CLAIM_AMOUNT = 10.00;
     const BONUS_DETAILS_ID = 'WelcomeBonusInit';
+
+
+    // --- Core Transaction Functions ---
+
+    const recordTransaction = (type, amount, account, details, status = 'Completed') => {
+        const newTx = {
+            date: new Date().toISOString().slice(0, 10),
+            type: type,
+            amount: amount,
+            account: account,
+            details: details,
+            status: status,
+        };
+        let key = HISTORY_STORAGE_KEY;
+        if (type === 'Claim') key = DAILY_CLAIM_KEY;
+        if (type === 'Task Reward') key = TASK_REWARD_KEY;
+
+        let history = JSON.parse(localStorage.getItem(key) || '[]');
+        history.push(newTx);
+        localStorage.setItem(key, JSON.stringify(history));
+    };
 
     /**
      * Retrieves all transaction history (standard txs, bonus, claims, and rewards).
@@ -124,14 +144,14 @@
     const getHistory = () => {
         let standardHistory = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
         let claimsHistory = JSON.parse(localStorage.getItem(DAILY_CLAIM_KEY) || '[]');
-        let rewardsHistory = JSON.parse(localStorage.getItem(TASK_REWARD_KEY) || '[]'); // Get rewards
+        let rewardsHistory = JSON.parse(localStorage.getItem(TASK_REWARD_KEY) || '[]');
         
         // 1. Check/Add Initial Welcome Bonus (using the unique ID)
         const hasWelcomeBonus = standardHistory.some(tx => tx.details === BONUS_DETAILS_ID);
         
         if (!hasWelcomeBonus) {
             const initialBonus = {
-                date: '2025-12-08', 
+                date: '2025-12-08', // Fixed date for the first transaction
                 type: 'Bonus',
                 amount: RECRUITMENT_BONUS,
                 account: 'N/A',
@@ -144,7 +164,6 @@
         }
 
         // 2. Combine all transaction types
-        // Now merging three arrays: standard, claims, and rewards
         let combinedHistory = standardHistory.concat(claimsHistory, rewardsHistory);
         
         // 3. Sort by date descending
@@ -163,6 +182,7 @@
         
         tableBody.innerHTML = ''; 
 
+        // The welcome bonus ensures history.length > 0, but safety check remains.
         if (history.length === 0) { 
             transactionTable.style.display = 'none';
             emptyMessage.style.display = 'block';
@@ -173,12 +193,12 @@
         emptyMessage.style.display = 'none';
 
         history.forEach(tx => {
-            const isCredit = ['Deposit', 'Bonus', 'Claim', 'Task Reward'].includes(tx.type); // Updated check
+            const isCredit = ['Deposit', 'Bonus', 'Claim', 'Task Reward'].includes(tx.type);
             const amountClass = isCredit ? 'deposit' : 'withdrawal';
             const sign = isCredit ? '+' : '-';
             const statusClass = `status-${tx.status.toLowerCase()}`;
             
-            // Normalize type for CSS class (e.g., 'Task Reward' becomes 'taskreward')
+            // Normalize type for CSS class (e.g., 'Task Reward' -> 'taskreward')
             const typeClass = tx.type.toLowerCase().replace(/\s/g, ''); 
             
             // Determine the details text to display
@@ -206,60 +226,18 @@
         });
     };
 
-    /**
-     * Records a standard transaction (Deposit/Withdrawal).
-     */
-    const recordTransaction = (type, amount, account, details, status = 'Completed') => {
-        const newTx = {
-            date: new Date().toISOString().slice(0, 10),
-            type: type,
-            amount: amount,
-            account: account,
-            details: details,
-            status: status,
-        };
-        let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]');
-        history.push(newTx);
-        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
-    };
-    
-    /**
-     * Records a Daily Claim transaction.
-     */
-    const recordDailyClaim = (date, status = 'Completed') => {
-        const newClaim = {
-            date: date,
-            type: 'Claim',
-            amount: DAILY_CLAIM_AMOUNT,
-            account: 'N/A',
-            details: `Daily Claim (${date})`,
-            status: status,
-        };
-        let claims = JSON.parse(localStorage.getItem(DAILY_CLAIM_KEY) || '[]');
-        claims.push(newClaim);
-        localStorage.setItem(DAILY_CLAIM_KEY, JSON.stringify(claims));
+    // --- SETUP SAMPLE DATA FOR DEMONSTRATION (Forced Reset Logic) ---
+
+    // 1. Clear existing history keys completely
+    const resetDemoData = () => {
+        localStorage.removeItem(HISTORY_STORAGE_KEY);
+        localStorage.removeItem(DAILY_CLAIM_KEY);
+        localStorage.removeItem(TASK_REWARD_KEY);
+        // Do NOT remove profileBalance, so the balance remains consistent for testing
     };
 
-    /**
-     * Records a Task Reward transaction.
-     */
-    const recordTaskReward = (amount, taskName, date = new Date().toISOString().slice(0, 10), status = 'Completed') => {
-        const newReward = {
-            date: date,
-            type: 'Task Reward',
-            amount: amount,
-            account: 'N/A',
-            details: taskName,
-            status: status,
-        };
-        let rewards = JSON.parse(localStorage.getItem(TASK_REWARD_KEY) || '[]');
-        rewards.push(newReward);
-        localStorage.setItem(TASK_REWARD_KEY, JSON.stringify(rewards));
-    };
-
-
-    // --- SETUP SAMPLE DATA FOR DEMONSTRATION (Runs once) ---
-    if (localStorage.getItem('isDemoDataAdded') !== 'true') {
+    const addDemoData = () => {
+        resetDemoData(); // Clear everything before adding new data
         
         // Ensure standard history is initialized before adding these, so the bonus is checked first.
         getHistory(); 
@@ -271,22 +249,24 @@
         const dayBefore = new Date(today);
         dayBefore.setDate(dayBefore.getDate() - 2);
 
-        // Daily Claims 
-        recordDailyClaim(today.toISOString().slice(0, 10), 'Completed');
-        recordDailyClaim(yesterday.toISOString().slice(0, 10), 'Completed');
+        // Daily Claims (Type 'Claim')
+        recordTransaction('Claim', DAILY_CLAIM_AMOUNT, 'N/A', `Daily Check-in for ${today.toISOString().slice(0, 10)}`);
+        recordTransaction('Claim', DAILY_CLAIM_AMOUNT, 'N/A', `Daily Check-in for ${yesterday.toISOString().slice(0, 10)}`);
 
-        // Task Rewards
-        recordTaskReward(50.00, 'Completed Profile Verification', dayBefore.toISOString().slice(0, 10));
-        recordTaskReward(25.00, 'First Time Link Khalti Wallet', today.toISOString().slice(0, 10));
+        // Task Rewards (Type 'Task Reward')
+        recordTransaction('Task Reward', 50.00, 'N/A', 'Completed Profile Verification', dayBefore.toISOString().slice(0, 10));
+        recordTransaction('Task Reward', 25.00, 'N/A', 'First Time Link Khalti Wallet', today.toISOString().slice(0, 10));
 
         // Standard Transactions (Deposits/Withdrawals)
         recordTransaction('Deposit', 1000.00, 'E-Sewa (984XXXXXXX)', 'Recharge Confirmation (TXN:ESEWA1)', 'Completed');
         recordTransaction('Withdrawal', 450.00, 'Bank (054XXXXXX)', 'Net Payout (10% fee)', 'Pending');
         recordTransaction('Withdrawal', 250.00, 'Khalti (981XXXXXXX)', 'Min Withdrawal requirement not met', 'Failed');
+    };
 
-        localStorage.setItem('isDemoDataAdded', 'true');
-    }
-
+    // NOTE: For demonstration purposes, we run this to ensure history is always full.
+    // In a production app, you would only call addDemoData once or only call
+    // recordTransaction when a real event occurs.
+    addDemoData();
 
     // --- RUN ON LOAD ---
     document.addEventListener('DOMContentLoaded', renderHistory);
